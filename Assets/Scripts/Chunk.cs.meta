@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: 83b0f993fa821b546b43692539659039
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - stone: {fileID: 9069632144938844392, guid: 470be9ef57c669542bf075d16f128cd5, type: 3}
+  - water: {fileID: 9069632144938844392, guid: 0db400a400054fe409ce54bdbb4b8883, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
