@@ -81,17 +81,23 @@ public class PlayerController : MonoBehaviour
             position += (hit.normal * -0.5f);
 
             selectionBox.transform.GetComponent<MeshRenderer>().enabled = true;
-            selectionBox.transform.position = new Vector3(Mathf.Round(position.x) + 0.5f, Mathf.Round(position.y) + 0.5f, Mathf.Round(position.z) + 0.5f);
+            selectionBox.transform.position = new Vector3(Mathf.Floor(position.x) + 0.5f, Mathf.Floor(position.y) + 0.5f, Mathf.Floor(position.z) + 0.5f);
 
-            if (position.x < 0) position.x = -position.x;
-            if (position.z < 0) position.z = -position.z;
+            bool negativex = false;
+            bool negativey = false;
+
+            if (position.x < 0) { position.x = -position.x; negativex = true; }
+            if (position.z < 0) { position.z = -position.z; negativey = true; }
 
             while (position.x > 16) position.x -= 16;
             while (position.z > 16) position.z -= 16;
 
+            if (negativex) position.x = 16 - position.x;
+            if (negativey) position.z = 16 - position.z;
+
             if (Input.GetMouseButtonDown(0))
             {
-                hit.transform.GetComponent<Chunk>().blocks.Remove(new Vector3(Mathf.Round(position.x), Mathf.Round(position.y), Mathf.Round(position.z)));
+                hit.transform.GetComponent<Chunk>().blocks.Remove(new Vector3(Mathf.Floor(position.x), Mathf.Floor(position.y), Mathf.Floor(position.z)));
 
                 hit.transform.GetComponent<Chunk>().Render();
             }
