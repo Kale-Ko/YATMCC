@@ -10,9 +10,6 @@ public class World : MonoBehaviour
 
     public int waterlevel = 64;
 
-    public float variation;
-    public float variation2;
-
     public GameObject chunkprefab;
 
     public GameObject player;
@@ -76,8 +73,8 @@ public class World : MonoBehaviour
                     chunk.name = "Chunk " + x + " " + y;
                     chunk.transform.parent = world.transform;
                     chunk.transform.position = new Vector3(x * chunksize, 0, y * chunksize);
-                    chunk.transform.GetChild(0).GetComponent<Chunk>().Generate(seed, x, y, chunksize, chunkheight, waterlevel, variation, variation2);
-                    chunk.transform.GetChild(1).GetComponent<Chunk>().Generate(seed, x, y, chunksize, chunkheight, waterlevel, variation, variation2);
+                    chunk.transform.GetChild(0).GetComponent<Chunk>().Generate(seed, x, y, chunksize, chunkheight, waterlevel);
+                    chunk.transform.GetChild(1).GetComponent<Chunk>().Generate(seed, x, y, chunksize, chunkheight, waterlevel);
 
                     chunkmap.Add(new Vector2(x, y), chunk);
                 }

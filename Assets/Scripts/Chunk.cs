@@ -16,7 +16,7 @@ public class Chunk : MonoBehaviour
     float x;
     float y;
 
-    public void Generate(int seed, float x, float y, int chunksize, int chunkheight, int waterlevel, float variation, float variation2)
+    public void Generate(int seed, float x, float y, int chunksize, int chunkheight, int waterlevel)
     {
         this.x = x;
         this.y = y;
@@ -31,13 +31,14 @@ public class Chunk : MonoBehaviour
         {
             for (var chunky = 0; chunky < chunksize; chunky++)
             {
-                int ylevel = waterlevel + Mathf.RoundToInt(noise.GetNoise((x * chunksize) + chunkx, (y * chunksize) + chunky) * variation);
+                int ylevel = waterlevel + Mathf.RoundToInt(noise.GetNoise((x * chunksize) + chunkx, (y * chunksize) + chunky) * 20f);
 
                 blocks.Add(new Vector3(chunkx, ylevel, chunky), 2);
-                for (var indexy = ylevel - 1; indexy >= ylevel - 3; indexy--) blocks.Add(new Vector3(chunkx, indexy, chunky), 1);
-                for (var indexy = ylevel - 4; indexy > 1; indexy--) blocks.Add(new Vector3(chunkx, indexy, chunky), 0);
+                for (var indexy = ylevel - 1; indexy >= ylevel - 4; indexy--) blocks.Add(new Vector3(chunkx, indexy, chunky), 1);
+                for (var indexy = ylevel - 5; indexy > 0; indexy--) blocks.Add(new Vector3(chunkx, indexy, chunky), 0);
+                blocks.Add(new Vector3(chunkx, 0, chunky), 3);
 
-                if (ylevel < waterlevel) for (var indexy = waterlevel; indexy > ylevel; indexy--) waterblocks.Add(new Vector3(chunkx, indexy, chunky), 3);
+                if (ylevel < waterlevel) for (var indexy = waterlevel; indexy > ylevel; indexy--) waterblocks.Add(new Vector3(chunkx, indexy, chunky), 4);
             }
         }
 
