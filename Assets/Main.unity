@@ -408,8 +408,8 @@ CharacterController:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Height: 2
-  m_Radius: 0.5
+  m_Height: 1.8
+  m_Radius: 0.4
   m_SlopeLimit: 60
   m_StepOffset: 0
   m_SkinWidth: 0.08
@@ -473,7 +473,7 @@ Transform:
   m_GameObject: {fileID: 1322517535}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 80, z: 0}
-  m_LocalScale: {x: 0.9, y: 0.9, z: 0.9}
+  m_LocalScale: {x: 0.8, y: 0.9, z: 0.8}
   m_Children:
   - {fileID: 963194228}
   - {fileID: 1557571849}
@@ -628,7 +628,5 @@ MonoBehaviour:
   chunksize: 16
   chunkheight: 128
   waterlevel: 64
-  variation: 24
-  variation2: 10
   chunkprefab: {fileID: 5996309389191628120, guid: 94d4883e802b9c74fb024a316a4e5d47, type: 3}
   player: {fileID: 1322517535}
