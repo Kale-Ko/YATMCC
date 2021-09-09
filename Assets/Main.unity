@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657838, g: 0.49641234, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -624,9 +624,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab0cce7892e24e146885fb9e5046713c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  distance: 2
-  chunksize: 16
-  chunkheight: 128
-  waterlevel: 64
-  chunkprefab: {fileID: 5996309389191628120, guid: 94d4883e802b9c74fb024a316a4e5d47, type: 3}
+  chunk: {fileID: 5996309389191628120, guid: 94d4883e802b9c74fb024a316a4e5d47, type: 3}
   player: {fileID: 1322517535}
+  distance: 1

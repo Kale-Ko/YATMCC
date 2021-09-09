@@ -75,7 +75,7 @@ public class PlayerController : MonoBehaviour
 
         RaycastHit hit;
 
-        if (Physics.Raycast(firstPersonCamera.transform.position, firstPersonCamera.transform.forward, out hit, 10f))
+        if (Physics.Raycast(firstPersonCamera.transform.position, firstPersonCamera.transform.forward, out hit, 4f))
         {
             Vector3 position = hit.point;
             position += (hit.normal * -0.5f);
@@ -83,23 +83,11 @@ public class PlayerController : MonoBehaviour
             selectionBox.transform.GetComponent<MeshRenderer>().enabled = true;
             selectionBox.transform.position = new Vector3(Mathf.Floor(position.x) + 0.5f, Mathf.Floor(position.y) + 0.5f, Mathf.Floor(position.z) + 0.5f);
 
-            bool negativex = false;
-            bool negativey = false;
-
-            if (position.x < 0) { position.x = -position.x; negativex = true; }
-            if (position.z < 0) { position.z = -position.z; negativey = true; }
-
-            while (position.x > 16) position.x -= 16;
-            while (position.z > 16) position.z -= 16;
-
-            if (negativex) position.x = 16 - position.x;
-            if (negativey) position.z = 16 - position.z;
-
             if (Input.GetMouseButtonDown(0))
             {
-                hit.transform.GetComponent<Chunk>().blocks.Remove(new Vector3(Mathf.Floor(position.x), Mathf.Floor(position.y), Mathf.Floor(position.z)));
+                hit.transform.parent.GetComponent<Chunk>().world.blocks.Remove(new Vector3(Mathf.Floor(position.x), Mathf.Floor(position.y), Mathf.Floor(position.z)));
 
-                hit.transform.GetComponent<Chunk>().Render();
+                hit.transform.parent.GetComponent<Chunk>().Render();
             }
         }
         else selectionBox.transform.GetComponent<MeshRenderer>().enabled = false;

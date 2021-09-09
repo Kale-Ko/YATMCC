@@ -1,24 +1,19 @@
 using System.Collections.Generic;
 using UnityEngine;
+using FastNoiseLite;
 
 public class World : MonoBehaviour
 {
-    public int distance = 2;
-
-    public int chunksize = 16;
-    public int chunkheight = 128;
-
-    public int waterlevel = 64;
-
-    public GameObject chunkprefab;
-
+    public GameObject chunk;
     public GameObject player;
 
-    Dictionary<Vector2, GameObject> chunkmap = new Dictionary<Vector2, GameObject>();
+    Vector2 lastpos = new Vector2(int.MaxValue, int.MaxValue);
 
-    int seed;
+    public int distance = 2;
 
-    Vector2 prevpos = new Vector2(float.MaxValue, float.MaxValue);
+    public int seed;
+
+    public Dictionary<Vector3, Blocks> blocks = new Dictionary<Vector3, Blocks>();
 
     void Start()
     {
@@ -27,57 +22,96 @@ public class World : MonoBehaviour
 
     void Update()
     {
-        Vector2 playerpos = new Vector2(Mathf.Round(player.transform.position.x / 16), Mathf.Round(player.transform.position.z / 16));
+        Vector2 pos = new Vector2(Mathf.RoundToInt(player.transform.position.x / 16), Mathf.RoundToInt(player.transform.position.z / 16));
 
-        if (playerpos != prevpos)
+        if (pos != lastpos)
         {
-            prevpos = playerpos;
+            lastpos = pos;
 
-            Generate();
+            GenerateWorld((int)pos.x, (int)pos.y);
         }
     }
 
-    public void Generate()
+    public Dictionary<Vector3, Blocks> GetBlocks()
     {
-        GameObject world = GameObject.Find("World");
+        Dictionary<Vector3, Blocks> blocks = new Dictionary<Vector3, Blocks>();
 
-        for (var index = 0; index < world.transform.childCount; index++)
+        foreach (KeyValuePair<Vector3, Blocks> kvp in this.blocks) if (kvp.Value != Blocks.Water) blocks.Add(kvp.Key, kvp.Value);
+
+        return blocks;
+    }
+
+    public Dictionary<Vector3, Blocks> GetWaterBlocks()
+    {
+        Dictionary<Vector3, Blocks> waterblocks = new Dictionary<Vector3, Blocks>();
+
+        foreach (KeyValuePair<Vector3, Blocks> kvp in this.blocks) if (kvp.Value == Blocks.Water) waterblocks.Add(kvp.Key, kvp.Value);
+
+        return waterblocks;
+    }
+
+    public void GenerateWorld(int centerx, int centery)
+    {
+        List<string> exists = new List<string>();
+
+        foreach (Transform child in transform)
         {
-            GameObject child = world.transform.GetChild(index).gameObject;
+            if (!child.name.Contains("Chunk")) continue;
 
             bool shouldexist = false;
 
-            for (var x = -distance + prevpos.x; x <= distance + prevpos.x; x++)
+            for (var x = centerx - distance; x < centerx + 1 + distance; x++)
             {
-                for (var y = -distance + prevpos.y; y <= distance + prevpos.y; y++)
+                for (var y = centery - distance; y < centery + 1 + distance; y++)
                 {
-                    if (child.name == "Chunk " + x + " " + y || !child.name.Contains("Chunk")) shouldexist = true;
+                    if (child.name == "Chunk " + x + ", " + y) shouldexist = true;
                 }
             }
 
-            if (!shouldexist)
-            {
-                chunkmap.Remove(new Vector2(int.Parse(child.name.Replace("Chunk ", "").Split(" ".ToCharArray())[0]), int.Parse(child.name.Replace("Chunk ", "").Split(" ".ToCharArray())[1])));
-
-                Destroy(child);
-            }
+            if (!shouldexist) Destroy(child.gameObject);
+            else exists.Add(child.name);
         }
 
-        for (var x = -distance + prevpos.x; x <= distance + prevpos.x; x++)
+        for (var x = centerx - distance; x < centerx + 1 + distance; x++)
         {
-            for (var y = -distance + prevpos.y; y <= distance + prevpos.y; y++)
+            for (var y = centery - distance; y < centery + 1 + distance; y++)
             {
-                if (GameObject.Find("Chunk " + x + " " + y) == null)
-                {
-                    GameObject chunk = Instantiate(chunkprefab);
-                    chunk.name = "Chunk " + x + " " + y;
-                    chunk.transform.parent = world.transform;
-                    chunk.transform.position = new Vector3(x * chunksize, 0, y * chunksize);
-                    chunk.transform.GetChild(0).GetComponent<Chunk>().Generate(seed, x, y, chunksize, chunkheight, waterlevel);
-                    chunk.transform.GetChild(1).GetComponent<Chunk>().Generate(seed, x, y, chunksize, chunkheight, waterlevel);
+                if (exists.Contains("Chunk " + x + ", " + y)) continue;
 
-                    chunkmap.Add(new Vector2(x, y), chunk);
-                }
+                Generate(x, y);
+
+                GameObject newchunk = Instantiate(chunk);
+                newchunk.name = "Chunk " + x + ", " + y;
+                newchunk.transform.parent = transform;
+                newchunk.transform.GetComponent<Chunk>().world = this;
+                newchunk.transform.GetComponent<Chunk>().chunkx = x;
+                newchunk.transform.GetComponent<Chunk>().chunky = y;
+                newchunk.transform.GetComponent<Chunk>().Render();
+            }
+        }
+    }
+
+    public void SetBlock(Vector3 pos, Blocks block) { if (!blocks.ContainsKey(pos)) blocks.Add(pos, block); }
+
+    public void Generate(int chunkx, int chunky)
+    {
+        Noise noise = new Noise(seed);
+        noise.SetNoiseType(Noise.NoiseType.Perlin);
+
+        Biome biome = Biomes.Plains;
+
+        for (var x = chunkx * 16; x < (chunkx + 1) * 16; x++)
+        {
+            for (var y = chunky * 16; y < (chunky + 1) * 16; y++)
+            {
+                float ylevel = Mathf.Round(biome.height + (noise.GetNoise(x, y) * biome.scale));
+
+                SetBlock(new Vector3(x, ylevel, y), biome.topblock);
+                for (var newy = ylevel - 1; newy > ylevel - 5; newy--) SetBlock(new Vector3(x, newy, y), biome.middleblock);
+                for (var newy = ylevel - 5; newy > 0; newy--) SetBlock(new Vector3(x, newy, y), biome.bottomblock);
+                SetBlock(new Vector3(x, 0, y), Blocks.Bedrock);
+
+                for (var newy = 64; newy > ylevel; newy--) SetBlock(new Vector3(x, newy, y), Blocks.Water);
             }
         }
     }
