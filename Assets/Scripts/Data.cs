@@ -54,4 +54,9 @@ public class Biomes
     public static Biome Desert = new Biome(70, 8, 5, Blocks.Sand, Blocks.Sand, Blocks.Stone, Trees.Cactus, 1);
     public static Biome Mountains = new Biome(100, 3, 20, Blocks.Stone, Blocks.Stone, Blocks.Stone, Trees.None, 0);
     public static Biome Ocean = new Biome(40, 4, 4, Blocks.Gravel, Blocks.Stone, Blocks.Stone, Trees.None, 0);
+
+    public static Biome GetBiome(int height, float temp)
+    {
+        return Biomes.Plains;
+    }
 }
