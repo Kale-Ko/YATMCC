@@ -472,7 +472,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1322517535}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 80, z: 0}
+  m_LocalPosition: {x: 8, y: 80, z: 8}
   m_LocalScale: {x: 0.8, y: 0.9, z: 0.8}
   m_Children:
   - {fileID: 963194228}
@@ -627,3 +627,4 @@ MonoBehaviour:
   chunk: {fileID: 5996309389191628120, guid: 94d4883e802b9c74fb024a316a4e5d47, type: 3}
   player: {fileID: 1322517535}
   distance: 1
+  seed: 0
