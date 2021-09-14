@@ -34,12 +34,12 @@ public class Blocks
     public static Block Bedrock = new Block(1, 0, 0);
     public static Block Stone = new Block(2, 1, 0);
     public static Block Dirt = new Block(3, 2, 0);
-    public static Block Grass = new Block(4, 3, 0, 2, 0, 3, 0);
+    public static Block Grass = new Block(4, 3, 0, 2, 0, 2, 0);
     public static Block Log = new Block(5, 4, 0, 5, 0);
     public static Block Leaves = new Block(6, 6, 0);
     public static Block Sand = new Block(7, 7, 0);
-    public static Block Gravel = new Block(8, 0, 1);
-    public static Block Water = new Block(9, 1, 1);
+    public static Block Gravel = new Block(8, 8, 0);
+    public static Block Water = new Block(9, 9, 0);
 
     public static Block[] blocks = { Air, Bedrock, Stone, Dirt, Grass, Log, Leaves, Sand, Gravel, Water };
 }
@@ -106,14 +106,21 @@ public class Biomes
 {
     public static Biome Plains = new Biome(70, 5, 5, Blocks.Grass, Blocks.Dirt, Blocks.Stone, Trees.None, 0);
     public static Biome Forest = new Biome(76, 4, 8, Blocks.Grass, Blocks.Dirt, Blocks.Stone, Trees.Oak, 3);
+    public static Biome Swamp = new Biome(64, 2, 8, Blocks.Grass, Blocks.Dirt, Blocks.Stone, Trees.Oak, 3);
     public static Biome Desert = new Biome(70, 8, 5, Blocks.Sand, Blocks.Sand, Blocks.Stone, Trees.Cactus, 1);
     public static Biome Mountains = new Biome(100, 3, 20, Blocks.Stone, Blocks.Stone, Blocks.Stone, Trees.None, 0);
     public static Biome Ocean = new Biome(40, 4, 4, Blocks.Gravel, Blocks.Stone, Blocks.Stone, Trees.None, 0);
 
-    public static Biome[] biomes = { Plains, Forest, Desert, Mountains, Ocean };
+    public static Biome[] biomes = { Plains, Forest, Swamp, Desert, Mountains, Ocean };
 
-    public static Biome GetBiome(int height, float temp)
+    public static Biome GetBiome(int seed)
     {
+        // Noise heightmap = new Noise(seed);
+        // heightmap.SetNoiseType(Noise.NoiseType.Perlin);
+
+        // Noise tempmap = new Noise(seed + 1);
+        // tempmap.SetNoiseType(Noise.NoiseType.Perlin);
+
         return Biomes.Plains;
     }
 }

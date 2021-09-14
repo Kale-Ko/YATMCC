@@ -22,7 +22,7 @@ public class World : MonoBehaviour
 
     void Update()
     {
-        Vector2 pos = new Vector2(Mathf.RoundToInt(player.transform.position.x / 16), Mathf.RoundToInt(player.transform.position.z / 16));
+        Vector2 pos = new Vector2(Mathf.FloorToInt(player.transform.position.x / 16), Mathf.FloorToInt(player.transform.position.z / 16));
 
         if (pos != lastpos)
         {
@@ -32,11 +32,20 @@ public class World : MonoBehaviour
         }
     }
 
+    public Dictionary<Vector3, Block> GetIteratorBlocks()
+    {
+        Dictionary<Vector3, Block> blocks = new Dictionary<Vector3, Block>();
+
+        foreach (KeyValuePair<Vector3, Block> kvp in this.blocks) if (kvp.Value != Blocks.Air) blocks.Add(kvp.Key, kvp.Value);
+
+        return blocks;
+    }
+
     public Dictionary<Vector3, Block> GetBlocks()
     {
         Dictionary<Vector3, Block> blocks = new Dictionary<Vector3, Block>();
 
-        foreach (KeyValuePair<Vector3, Block> kvp in this.blocks) if (kvp.Value != Blocks.Water) blocks.Add(kvp.Key, kvp.Value);
+        foreach (KeyValuePair<Vector3, Block> kvp in this.blocks) if (kvp.Value != Blocks.Air && kvp.Value != Blocks.Water) blocks.Add(kvp.Key, kvp.Value);
 
         return blocks;
     }
@@ -93,23 +102,31 @@ public class World : MonoBehaviour
         }
     }
 
-    public void SetBlock(Vector3 pos, Block block) { if (!blocks.ContainsKey(pos)) blocks.Add(pos, block); }
+    public Block GetBlock(Vector3 pos) { return blocks[pos]; }
+
+    public void SetBlock(Vector3 pos, Block block)
+    {
+        if (blocks.ContainsKey(pos)) return;
+
+        blocks.Add(pos, block);
+    }
+
+    public void RemoveBlock(Vector3 pos) { blocks.Remove(pos); SetBlock(pos, Blocks.Air); }
 
     public void Generate(int chunkx, int chunky)
     {
-        Noise heightmap = new Noise(seed);
-        heightmap.SetNoiseType(Noise.NoiseType.Perlin);
-
-        Noise tempmap = new Noise(seed + 1);
-        heightmap.SetNoiseType(Noise.NoiseType.Perlin);
+        Noise noise = new Noise(seed);
+        noise.SetNoiseType(Noise.NoiseType.Perlin);
 
         for (var x = chunkx * 16; x < (chunkx + 1) * 16; x++)
         {
             for (var y = chunky * 16; y < (chunky + 1) * 16; y++)
             {
-                Biome biome = Biomes.GetBiome(Mathf.RoundToInt(heightmap.GetNoise(x, y) * 128), Mathf.Round(tempmap.GetNoise(x, y) * 10));
+                Biome biome = Biomes.GetBiome(seed);
 
-                float ylevel = Mathf.Round(biome.height + (heightmap.GetNoise(x, y) * biome.scale));
+                float ylevel = Mathf.Round(biome.height + (noise.GetNoise(x, y) * biome.scale));
+
+                for (var newy = ylevel + 1; newy < 128; newy++) SetBlock(new Vector3(x, newy, y), Blocks.Air);
 
                 SetBlock(new Vector3(x, ylevel, y), biome.topblock);
                 for (var newy = ylevel - 1; newy > ylevel - 5; newy--) SetBlock(new Vector3(x, newy, y), biome.middleblock);
