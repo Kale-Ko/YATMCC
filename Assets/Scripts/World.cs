@@ -115,16 +115,22 @@ public class World : MonoBehaviour
 
     public void Generate(int chunkx, int chunky)
     {
-        Noise noise = new Noise(seed);
-        noise.SetNoiseType(Noise.NoiseType.Perlin);
+        Noise heightmap = new Noise(seed);
+        heightmap.SetNoiseType(Noise.NoiseType.Perlin);
+
+        Noise tempmap = new Noise(seed + 1);
+        tempmap.SetNoiseType(Noise.NoiseType.Perlin);
+
+        Noise moisturemap = new Noise(seed + 2);
+        moisturemap.SetNoiseType(Noise.NoiseType.Perlin);
 
         for (var x = chunkx * 16; x < (chunkx + 1) * 16; x++)
         {
             for (var y = chunky * 16; y < (chunky + 1) * 16; y++)
             {
-                Biome biome = Biomes.GetBiome(seed);
+                Biome biome = Biomes.GetBiome(heightmap, tempmap, moisturemap);
 
-                float ylevel = Mathf.Round(biome.height + (noise.GetNoise(x, y) * biome.scale));
+                float ylevel = Mathf.Round(biome.height + (heightmap.GetNoise(x, y) * biome.scale));
 
                 for (var newy = ylevel + 1; newy < 128; newy++) SetBlock(new Vector3(x, newy, y), Blocks.Air);
 
