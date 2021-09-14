@@ -22,8 +22,8 @@ public class Chunk : MonoBehaviour
         List<int> watertriangles = new List<int>();
         List<Vector2> wateruvs = new List<Vector2>();
 
-        Dictionary<Vector3, Blocks> blocks = world.GetBlocks();
-        Dictionary<Vector3, Blocks> waterblock = world.GetWaterBlocks();
+        Dictionary<Vector3, Block> blocks = world.GetBlocks();
+        Dictionary<Vector3, Block> waterblock = world.GetWaterBlocks();
 
         for (var x = chunkx * 16; x < (chunkx + 1) * 16; x++)
         {
@@ -67,7 +67,7 @@ public class Chunk : MonoBehaviour
                             vertices.Add(blockPos + new Vector3(1, 0, 0));
                             numFaces++;
 
-                            uvs.AddRange(GetUV("front", blocks[blockPos]));
+                            uvs.AddRange(GetUV("side", blocks[blockPos]));
                         }
 
                         if (!blocks.ContainsKey(new Vector3(x, y, z + 1)))
@@ -78,7 +78,7 @@ public class Chunk : MonoBehaviour
                             vertices.Add(blockPos + new Vector3(0, 0, 1));
                             numFaces++;
 
-                            uvs.AddRange(GetUV("back", blocks[blockPos]));
+                            uvs.AddRange(GetUV("side", blocks[blockPos]));
                         }
 
                         if (!blocks.ContainsKey(new Vector3(x - 1, y, z)))
@@ -89,7 +89,7 @@ public class Chunk : MonoBehaviour
                             vertices.Add(blockPos + new Vector3(0, 0, 0));
                             numFaces++;
 
-                            uvs.AddRange(GetUV("left", blocks[blockPos]));
+                            uvs.AddRange(GetUV("side", blocks[blockPos]));
                         }
 
                         if (!blocks.ContainsKey(new Vector3(x + 1, y, z)))
@@ -100,7 +100,7 @@ public class Chunk : MonoBehaviour
                             vertices.Add(blockPos + new Vector3(1, 0, 1));
                             numFaces++;
 
-                            uvs.AddRange(GetUV("right", blocks[blockPos]));
+                            uvs.AddRange(GetUV("side", blocks[blockPos]));
                         }
 
                         int tl = vertices.Count - 4 * numFaces;
@@ -142,7 +142,7 @@ public class Chunk : MonoBehaviour
                             watervertices.Add(blockPos + new Vector3(1, 0, 0));
                             numFaces++;
 
-                            wateruvs.AddRange(GetUV("front", waterblock[blockPos]));
+                            wateruvs.AddRange(GetUV("side", waterblock[blockPos]));
                         }
 
                         if (!waterblock.ContainsKey(new Vector3(x, y, z + 1)))
@@ -153,7 +153,7 @@ public class Chunk : MonoBehaviour
                             watervertices.Add(blockPos + new Vector3(0, 0, 1));
                             numFaces++;
 
-                            wateruvs.AddRange(GetUV("back", waterblock[blockPos]));
+                            wateruvs.AddRange(GetUV("side", waterblock[blockPos]));
                         }
 
                         if (!waterblock.ContainsKey(new Vector3(x - 1, y, z)))
@@ -164,7 +164,7 @@ public class Chunk : MonoBehaviour
                             watervertices.Add(blockPos + new Vector3(0, 0, 0));
                             numFaces++;
 
-                            wateruvs.AddRange(GetUV("left", waterblock[blockPos]));
+                            wateruvs.AddRange(GetUV("side", waterblock[blockPos]));
                         }
 
                         if (!waterblock.ContainsKey(new Vector3(x + 1, y, z)))
@@ -175,7 +175,7 @@ public class Chunk : MonoBehaviour
                             watervertices.Add(blockPos + new Vector3(1, 0, 1));
                             numFaces++;
 
-                            wateruvs.AddRange(GetUV("right", waterblock[blockPos]));
+                            wateruvs.AddRange(GetUV("side", waterblock[blockPos]));
                         }
 
                         int tl = watervertices.Count - 4 * numFaces;
@@ -208,12 +208,14 @@ public class Chunk : MonoBehaviour
         transform.GetChild(1).GetComponent<MeshFilter>().mesh = watermesh;
     }
 
-    public Vector2[] GetUV(string side, Blocks id)
+    public Vector2[] GetUV(string side, Block block)
     {
-        int x = (int)id;
+        int x = 1;
         int y = 0;
 
-        while (x > 16) { x -= 16; y++; }
+        if (side == "top") { x = block.toptexturex; y = block.toptexturey; }
+        else if (side == "bottom") { x = block.bottomtexturex; y = block.bottomtexturey; }
+        else if (side == "side") { x = block.sidetexturex; y = block.sidetexturey; }
 
         return new Vector2[] {
             new Vector2(x / 16f + .001f, y / 16f + .001f),
