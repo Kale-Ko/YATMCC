@@ -1,3 +1,5 @@
+using FastNoiseLite;
+
 public class Block
 {
     public int id;
@@ -76,6 +78,7 @@ public class Biome
 {
     public float height;
     public float temperature;
+    public float moisture;
 
     public float scale;
 
@@ -86,10 +89,11 @@ public class Biome
     public Tree tree;
     public float treeamount;
 
-    public Biome(float height, float temperature, float scale, Block topblock, Block middleblock, Block bottomblock, Tree tree, float treeamount)
+    public Biome(float height, float temperature, float moisture, float scale, Block topblock, Block middleblock, Block bottomblock, Tree tree, float treeamount)
     {
         this.height = height;
         this.temperature = temperature;
+        this.moisture = moisture;
 
         this.scale = scale;
 
@@ -104,23 +108,17 @@ public class Biome
 
 public class Biomes
 {
-    public static Biome Plains = new Biome(70, 5, 5, Blocks.Grass, Blocks.Dirt, Blocks.Stone, Trees.None, 0);
-    public static Biome Forest = new Biome(76, 4, 8, Blocks.Grass, Blocks.Dirt, Blocks.Stone, Trees.Oak, 3);
-    public static Biome Swamp = new Biome(64, 2, 8, Blocks.Grass, Blocks.Dirt, Blocks.Stone, Trees.Oak, 3);
-    public static Biome Desert = new Biome(70, 8, 5, Blocks.Sand, Blocks.Sand, Blocks.Stone, Trees.Cactus, 1);
-    public static Biome Mountains = new Biome(100, 3, 20, Blocks.Stone, Blocks.Stone, Blocks.Stone, Trees.None, 0);
-    public static Biome Ocean = new Biome(40, 4, 4, Blocks.Gravel, Blocks.Stone, Blocks.Stone, Trees.None, 0);
+    public static Biome Plains = new Biome(70, 5, 3, 5, Blocks.Grass, Blocks.Dirt, Blocks.Stone, Trees.None, 0);
+    public static Biome Forest = new Biome(76, 4, 5, 8, Blocks.Grass, Blocks.Dirt, Blocks.Stone, Trees.Oak, 3);
+    public static Biome Swamp = new Biome(64, 2, 8, 8, Blocks.Grass, Blocks.Dirt, Blocks.Stone, Trees.Oak, 3);
+    public static Biome Desert = new Biome(70, 8, 1, 5, Blocks.Sand, Blocks.Sand, Blocks.Stone, Trees.Cactus, 1);
+    public static Biome Mountains = new Biome(100, 3, 3, 20, Blocks.Stone, Blocks.Stone, Blocks.Stone, Trees.None, 0);
+    public static Biome Ocean = new Biome(40, 4, 10, 4, Blocks.Gravel, Blocks.Stone, Blocks.Stone, Trees.None, 0);
 
     public static Biome[] biomes = { Plains, Forest, Swamp, Desert, Mountains, Ocean };
 
-    public static Biome GetBiome(int seed)
+    public static Biome GetBiome(Noise heightmap, Noise tempmap, Noise moisturemap)
     {
-        // Noise heightmap = new Noise(seed);
-        // heightmap.SetNoiseType(Noise.NoiseType.Perlin);
-
-        // Noise tempmap = new Noise(seed + 1);
-        // tempmap.SetNoiseType(Noise.NoiseType.Perlin);
-
         return Biomes.Plains;
     }
 }
