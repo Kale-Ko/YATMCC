@@ -13,7 +13,7 @@ public class World : MonoBehaviour
 
     public int seed;
 
-    public Dictionary<Vector3, Blocks> blocks = new Dictionary<Vector3, Blocks>();
+    public Dictionary<Vector3, Block> blocks = new Dictionary<Vector3, Block>();
 
     void Start()
     {
@@ -32,20 +32,20 @@ public class World : MonoBehaviour
         }
     }
 
-    public Dictionary<Vector3, Blocks> GetBlocks()
+    public Dictionary<Vector3, Block> GetBlocks()
     {
-        Dictionary<Vector3, Blocks> blocks = new Dictionary<Vector3, Blocks>();
+        Dictionary<Vector3, Block> blocks = new Dictionary<Vector3, Block>();
 
-        foreach (KeyValuePair<Vector3, Blocks> kvp in this.blocks) if (kvp.Value != Blocks.Water) blocks.Add(kvp.Key, kvp.Value);
+        foreach (KeyValuePair<Vector3, Block> kvp in this.blocks) if (kvp.Value != Blocks.Water) blocks.Add(kvp.Key, kvp.Value);
 
         return blocks;
     }
 
-    public Dictionary<Vector3, Blocks> GetWaterBlocks()
+    public Dictionary<Vector3, Block> GetWaterBlocks()
     {
-        Dictionary<Vector3, Blocks> waterblocks = new Dictionary<Vector3, Blocks>();
+        Dictionary<Vector3, Block> waterblocks = new Dictionary<Vector3, Block>();
 
-        foreach (KeyValuePair<Vector3, Blocks> kvp in this.blocks) if (kvp.Value == Blocks.Water) waterblocks.Add(kvp.Key, kvp.Value);
+        foreach (KeyValuePair<Vector3, Block> kvp in this.blocks) if (kvp.Value == Blocks.Water) waterblocks.Add(kvp.Key, kvp.Value);
 
         return waterblocks;
     }
@@ -93,7 +93,7 @@ public class World : MonoBehaviour
         }
     }
 
-    public void SetBlock(Vector3 pos, Blocks block) { if (!blocks.ContainsKey(pos)) blocks.Add(pos, block); }
+    public void SetBlock(Vector3 pos, Block block) { if (!blocks.ContainsKey(pos)) blocks.Add(pos, block); }
 
     public void Generate(int chunkx, int chunky)
     {
