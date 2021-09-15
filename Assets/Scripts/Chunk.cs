@@ -30,152 +30,157 @@ public class Chunk : MonoBehaviour
         {
             if (block.Key.x < chunkx * 16 || block.Key.x > (chunkx + 1) * 16 || block.Key.z < chunky * 16 || block.Key.z > (chunky + 1) * 16) continue;
 
-            int numFaces = 0;
-
-            if (block.Key.y < 128 && !blocks.ContainsKey(new Vector3(block.Key.x, block.Key.y + 1, block.Key.z)))
+            if (block.Value != Blocks.Water)
             {
-                vertices.Add(block.Key + new Vector3(0, 1, 0));
-                vertices.Add(block.Key + new Vector3(0, 1, 1));
-                vertices.Add(block.Key + new Vector3(1, 1, 1));
-                vertices.Add(block.Key + new Vector3(1, 1, 0));
-                numFaces++;
+                int numFaces = 0;
 
-                uvs.AddRange(GetUV("top", block.Value));
+                if (block.Key.y < 128 && !blocks.ContainsKey(new Vector3(block.Key.x, block.Key.y + 1, block.Key.z)))
+                {
+                    vertices.Add(block.Key + new Vector3(0, 1, 0));
+                    vertices.Add(block.Key + new Vector3(0, 1, 1));
+                    vertices.Add(block.Key + new Vector3(1, 1, 1));
+                    vertices.Add(block.Key + new Vector3(1, 1, 0));
+                    numFaces++;
+
+                    uvs.AddRange(GetUV("top", block.Value));
+                }
+
+                if (block.Key.y > 0 && !blocks.ContainsKey(new Vector3(block.Key.x, block.Key.y - 1, block.Key.z)))
+                {
+                    vertices.Add(block.Key + new Vector3(0, 0, 0));
+                    vertices.Add(block.Key + new Vector3(1, 0, 0));
+                    vertices.Add(block.Key + new Vector3(1, 0, 1));
+                    vertices.Add(block.Key + new Vector3(0, 0, 1));
+                    numFaces++;
+
+                    uvs.AddRange(GetUV("bottom", block.Value));
+                }
+
+                if (!blocks.ContainsKey(new Vector3(block.Key.x, block.Key.y, block.Key.z - 1)))
+                {
+                    vertices.Add(block.Key + new Vector3(0, 0, 0));
+                    vertices.Add(block.Key + new Vector3(0, 1, 0));
+                    vertices.Add(block.Key + new Vector3(1, 1, 0));
+                    vertices.Add(block.Key + new Vector3(1, 0, 0));
+                    numFaces++;
+
+                    uvs.AddRange(GetUV("side", block.Value));
+                }
+
+                if (!blocks.ContainsKey(new Vector3(block.Key.x, block.Key.y, block.Key.z + 1)))
+                {
+                    vertices.Add(block.Key + new Vector3(1, 0, 1));
+                    vertices.Add(block.Key + new Vector3(1, 1, 1));
+                    vertices.Add(block.Key + new Vector3(0, 1, 1));
+                    vertices.Add(block.Key + new Vector3(0, 0, 1));
+                    numFaces++;
+
+                    uvs.AddRange(GetUV("side", block.Value));
+                }
+
+                if (!blocks.ContainsKey(new Vector3(block.Key.x - 1, block.Key.y, block.Key.z)))
+                {
+                    vertices.Add(block.Key + new Vector3(0, 0, 1));
+                    vertices.Add(block.Key + new Vector3(0, 1, 1));
+                    vertices.Add(block.Key + new Vector3(0, 1, 0));
+                    vertices.Add(block.Key + new Vector3(0, 0, 0));
+                    numFaces++;
+
+                    uvs.AddRange(GetUV("side", block.Value));
+                }
+
+                if (!blocks.ContainsKey(new Vector3(block.Key.x + 1, block.Key.y, block.Key.z)))
+                {
+                    vertices.Add(block.Key + new Vector3(1, 0, 0));
+                    vertices.Add(block.Key + new Vector3(1, 1, 0));
+                    vertices.Add(block.Key + new Vector3(1, 1, 1));
+                    vertices.Add(block.Key + new Vector3(1, 0, 1));
+                    numFaces++;
+
+                    uvs.AddRange(GetUV("side", block.Value));
+                }
+
+                int tl = vertices.Count - 4 * numFaces;
+                for (int i = 0; i < numFaces; i++)
+                {
+                    triangles.AddRange(new int[] { tl + i * 4, tl + i * 4 + 1, tl + i * 4 + 2, tl + i * 4, tl + i * 4 + 2, tl + i * 4 + 3 });
+                }
             }
-
-            if (block.Key.y > 0 && !blocks.ContainsKey(new Vector3(block.Key.x, block.Key.y - 1, block.Key.z)))
+            else
             {
-                vertices.Add(block.Key + new Vector3(0, 0, 0));
-                vertices.Add(block.Key + new Vector3(1, 0, 0));
-                vertices.Add(block.Key + new Vector3(1, 0, 1));
-                vertices.Add(block.Key + new Vector3(0, 0, 1));
-                numFaces++;
+                int numFaces = 0;
 
-                uvs.AddRange(GetUV("bottom", block.Value));
-            }
+                if (block.Key.y < 128 && !waterblocks.ContainsKey(new Vector3(block.Key.x, block.Key.y + 1, block.Key.z)))
+                {
+                    watervertices.Add(block.Key + new Vector3(0, 1, 0));
+                    watervertices.Add(block.Key + new Vector3(0, 1, 1));
+                    watervertices.Add(block.Key + new Vector3(1, 1, 1));
+                    watervertices.Add(block.Key + new Vector3(1, 1, 0));
+                    numFaces++;
 
-            if (!blocks.ContainsKey(new Vector3(block.Key.x, block.Key.y, block.Key.z - 1)))
-            {
-                vertices.Add(block.Key + new Vector3(0, 0, 0));
-                vertices.Add(block.Key + new Vector3(0, 1, 0));
-                vertices.Add(block.Key + new Vector3(1, 1, 0));
-                vertices.Add(block.Key + new Vector3(1, 0, 0));
-                numFaces++;
+                    wateruvs.AddRange(GetUV("top", block.Value));
+                }
 
-                uvs.AddRange(GetUV("side", block.Value));
-            }
+                if (block.Key.y > 0 && !waterblocks.ContainsKey(new Vector3(block.Key.x, block.Key.y - 1, block.Key.z)))
+                {
+                    watervertices.Add(block.Key + new Vector3(0, 0, 0));
+                    watervertices.Add(block.Key + new Vector3(1, 0, 0));
+                    watervertices.Add(block.Key + new Vector3(1, 0, 1));
+                    watervertices.Add(block.Key + new Vector3(0, 0, 1));
+                    numFaces++;
 
-            if (!blocks.ContainsKey(new Vector3(block.Key.x, block.Key.y, block.Key.z + 1)))
-            {
-                vertices.Add(block.Key + new Vector3(1, 0, 1));
-                vertices.Add(block.Key + new Vector3(1, 1, 1));
-                vertices.Add(block.Key + new Vector3(0, 1, 1));
-                vertices.Add(block.Key + new Vector3(0, 0, 1));
-                numFaces++;
+                    wateruvs.AddRange(GetUV("bottom", block.Value));
+                }
 
-                uvs.AddRange(GetUV("side", block.Value));
-            }
+                if (!waterblocks.ContainsKey(new Vector3(block.Key.x, block.Key.y, block.Key.z - 1)))
+                {
+                    watervertices.Add(block.Key + new Vector3(0, 0, 0));
+                    watervertices.Add(block.Key + new Vector3(0, 1, 0));
+                    watervertices.Add(block.Key + new Vector3(1, 1, 0));
+                    watervertices.Add(block.Key + new Vector3(1, 0, 0));
+                    numFaces++;
 
-            if (!blocks.ContainsKey(new Vector3(block.Key.x - 1, block.Key.y, block.Key.z)))
-            {
-                vertices.Add(block.Key + new Vector3(0, 0, 1));
-                vertices.Add(block.Key + new Vector3(0, 1, 1));
-                vertices.Add(block.Key + new Vector3(0, 1, 0));
-                vertices.Add(block.Key + new Vector3(0, 0, 0));
-                numFaces++;
+                    wateruvs.AddRange(GetUV("side", block.Value));
+                }
 
-                uvs.AddRange(GetUV("side", block.Value));
-            }
+                if (!waterblocks.ContainsKey(new Vector3(block.Key.x, block.Key.y, block.Key.z + 1)))
+                {
+                    watervertices.Add(block.Key + new Vector3(1, 0, 1));
+                    watervertices.Add(block.Key + new Vector3(1, 1, 1));
+                    watervertices.Add(block.Key + new Vector3(0, 1, 1));
+                    watervertices.Add(block.Key + new Vector3(0, 0, 1));
+                    numFaces++;
 
-            if (!blocks.ContainsKey(new Vector3(block.Key.x + 1, block.Key.y, block.Key.z)))
-            {
-                vertices.Add(block.Key + new Vector3(1, 0, 0));
-                vertices.Add(block.Key + new Vector3(1, 1, 0));
-                vertices.Add(block.Key + new Vector3(1, 1, 1));
-                vertices.Add(block.Key + new Vector3(1, 0, 1));
-                numFaces++;
+                    wateruvs.AddRange(GetUV("side", block.Value));
+                }
 
-                uvs.AddRange(GetUV("side", block.Value));
-            }
+                if (!waterblocks.ContainsKey(new Vector3(block.Key.x - 1, block.Key.y, block.Key.z)))
+                {
+                    watervertices.Add(block.Key + new Vector3(0, 0, 1));
+                    watervertices.Add(block.Key + new Vector3(0, 1, 1));
+                    watervertices.Add(block.Key + new Vector3(0, 1, 0));
+                    watervertices.Add(block.Key + new Vector3(0, 0, 0));
+                    numFaces++;
 
-            int tl = vertices.Count - 4 * numFaces;
-            for (int i = 0; i < numFaces; i++)
-            {
-                triangles.AddRange(new int[] { tl + i * 4, tl + i * 4 + 1, tl + i * 4 + 2, tl + i * 4, tl + i * 4 + 2, tl + i * 4 + 3 });
-            }
+                    wateruvs.AddRange(GetUV("side", block.Value));
+                }
 
-            numFaces = 0;
+                if (!waterblocks.ContainsKey(new Vector3(block.Key.x + 1, block.Key.y, block.Key.z)))
+                {
+                    watervertices.Add(block.Key + new Vector3(1, 0, 0));
+                    watervertices.Add(block.Key + new Vector3(1, 1, 0));
+                    watervertices.Add(block.Key + new Vector3(1, 1, 1));
+                    watervertices.Add(block.Key + new Vector3(1, 0, 1));
+                    numFaces++;
 
-            if (block.Key.y < 128 && !waterblocks.ContainsKey(new Vector3(block.Key.x, block.Key.y + 1, block.Key.z)))
-            {
-                watervertices.Add(block.Key + new Vector3(0, 1, 0));
-                watervertices.Add(block.Key + new Vector3(0, 1, 1));
-                watervertices.Add(block.Key + new Vector3(1, 1, 1));
-                watervertices.Add(block.Key + new Vector3(1, 1, 0));
-                numFaces++;
+                    wateruvs.AddRange(GetUV("side", block.Value));
+                }
 
-                wateruvs.AddRange(GetUV("top", block.Value));
-            }
-
-            if (block.Key.y > 0 && !waterblocks.ContainsKey(new Vector3(block.Key.x, block.Key.y - 1, block.Key.z)))
-            {
-                watervertices.Add(block.Key + new Vector3(0, 0, 0));
-                watervertices.Add(block.Key + new Vector3(1, 0, 0));
-                watervertices.Add(block.Key + new Vector3(1, 0, 1));
-                watervertices.Add(block.Key + new Vector3(0, 0, 1));
-                numFaces++;
-
-                wateruvs.AddRange(GetUV("bottom", block.Value));
-            }
-
-            if (!waterblocks.ContainsKey(new Vector3(block.Key.x, block.Key.y, block.Key.z - 1)))
-            {
-                watervertices.Add(block.Key + new Vector3(0, 0, 0));
-                watervertices.Add(block.Key + new Vector3(0, 1, 0));
-                watervertices.Add(block.Key + new Vector3(1, 1, 0));
-                watervertices.Add(block.Key + new Vector3(1, 0, 0));
-                numFaces++;
-
-                wateruvs.AddRange(GetUV("side", block.Value));
-            }
-
-            if (!waterblocks.ContainsKey(new Vector3(block.Key.x, block.Key.y, block.Key.z + 1)))
-            {
-                watervertices.Add(block.Key + new Vector3(1, 0, 1));
-                watervertices.Add(block.Key + new Vector3(1, 1, 1));
-                watervertices.Add(block.Key + new Vector3(0, 1, 1));
-                watervertices.Add(block.Key + new Vector3(0, 0, 1));
-                numFaces++;
-
-                wateruvs.AddRange(GetUV("side", block.Value));
-            }
-
-            if (!waterblocks.ContainsKey(new Vector3(block.Key.x - 1, block.Key.y, block.Key.z)))
-            {
-                watervertices.Add(block.Key + new Vector3(0, 0, 1));
-                watervertices.Add(block.Key + new Vector3(0, 1, 1));
-                watervertices.Add(block.Key + new Vector3(0, 1, 0));
-                watervertices.Add(block.Key + new Vector3(0, 0, 0));
-                numFaces++;
-
-                wateruvs.AddRange(GetUV("side", block.Value));
-            }
-
-            if (!waterblocks.ContainsKey(new Vector3(block.Key.x + 1, block.Key.y, block.Key.z)))
-            {
-                watervertices.Add(block.Key + new Vector3(1, 0, 0));
-                watervertices.Add(block.Key + new Vector3(1, 1, 0));
-                watervertices.Add(block.Key + new Vector3(1, 1, 1));
-                watervertices.Add(block.Key + new Vector3(1, 0, 1));
-                numFaces++;
-
-                wateruvs.AddRange(GetUV("side", block.Value));
-            }
-
-            tl = watervertices.Count - 4 * numFaces;
-            for (int i = 0; i < numFaces; i++)
-            {
-                watertriangles.AddRange(new int[] { tl + i * 4, tl + i * 4 + 1, tl + i * 4 + 2, tl + i * 4, tl + i * 4 + 2, tl + i * 4 + 3 });
+                int tl = watervertices.Count - 4 * numFaces;
+                for (int i = 0; i < numFaces; i++)
+                {
+                    watertriangles.AddRange(new int[] { tl + i * 4, tl + i * 4 + 1, tl + i * 4 + 2, tl + i * 4, tl + i * 4 + 2, tl + i * 4 + 3 });
+                }
             }
         }
 
