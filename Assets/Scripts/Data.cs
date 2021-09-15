@@ -1,3 +1,6 @@
+using System;
+using System.Collections;
+using UnityEngine;
 using FastNoiseLite;
 
 public class Block
@@ -108,6 +111,7 @@ public class Biome
 
 public class Biomes
 {
+    public static Biome Void = new Biome(0, -1, -1, 0, Blocks.Air, Blocks.Air, Blocks.Air, Trees.None, 0);
     public static Biome Plains = new Biome(70, 5, 3, 5, Blocks.Grass, Blocks.Dirt, Blocks.Stone, Trees.None, 0);
     public static Biome Forest = new Biome(76, 4, 5, 8, Blocks.Grass, Blocks.Dirt, Blocks.Stone, Trees.Oak, 3);
     public static Biome Swamp = new Biome(64, 2, 8, 8, Blocks.Grass, Blocks.Dirt, Blocks.Stone, Trees.Oak, 3);
@@ -117,8 +121,14 @@ public class Biomes
 
     public static Biome[] biomes = { Plains, Forest, Swamp, Desert, Mountains, Ocean };
 
-    public static Biome GetBiome(Noise heightmap, Noise tempmap, Noise moisturemap)
+    public static Biome GetBiome(float height, float temp, float moisture)
     {
-        return Biomes.Plains;
+        if (height == Biomes.Plains.height || (height > 64 && height < 76)) return Biomes.Plains;
+        else if (height == Biomes.Forest.height || (height > 70 && height < 100)) return Biomes.Forest;
+        else if (height == Biomes.Swamp.height || (height > 40 && height < 70)) return Biomes.Swamp;
+        else if (height == Biomes.Desert.height || (height > 64 && height < 76)) return Biomes.Desert;
+        else if (height == Biomes.Mountains.height || height > 76) return Biomes.Mountains;
+        else if (height == Biomes.Ocean.height || height < 64) return Biomes.Ocean;
+        else return Biomes.Void;
     }
 }
