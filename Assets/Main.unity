@@ -1143,6 +1143,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   time: 0
+  day: 0
 --- !u!1 &2090635425
 GameObject:
   m_ObjectHideFlags: 0
