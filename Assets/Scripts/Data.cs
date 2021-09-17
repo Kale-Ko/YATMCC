@@ -1,8 +1,3 @@
-using System;
-using System.Collections;
-using UnityEngine;
-using FastNoiseLite;
-
 public class Block
 {
     public int id;
