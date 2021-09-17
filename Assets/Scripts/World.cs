@@ -32,33 +32,6 @@ public class World : MonoBehaviour
         }
     }
 
-    public Dictionary<Vector3, Block> GetIteratorBlocks()
-    {
-        Dictionary<Vector3, Block> blocks = new Dictionary<Vector3, Block>();
-
-        foreach (KeyValuePair<Vector3, Block> kvp in this.blocks) if (kvp.Value != Blocks.Air) blocks.Add(kvp.Key, kvp.Value);
-
-        return blocks;
-    }
-
-    public Dictionary<Vector3, Block> GetBlocks()
-    {
-        Dictionary<Vector3, Block> blocks = new Dictionary<Vector3, Block>();
-
-        foreach (KeyValuePair<Vector3, Block> kvp in this.blocks) if (kvp.Value != Blocks.Air && kvp.Value != Blocks.Water) blocks.Add(kvp.Key, kvp.Value);
-
-        return blocks;
-    }
-
-    public Dictionary<Vector3, Block> GetWaterBlocks()
-    {
-        Dictionary<Vector3, Block> waterblocks = new Dictionary<Vector3, Block>();
-
-        foreach (KeyValuePair<Vector3, Block> kvp in this.blocks) if (kvp.Value == Blocks.Water) waterblocks.Add(kvp.Key, kvp.Value);
-
-        return waterblocks;
-    }
-
     public void GenerateWorld(int centerx, int centery)
     {
         List<string> exists = new List<string>();
@@ -67,17 +40,11 @@ public class World : MonoBehaviour
         {
             if (!child.name.Contains("Chunk")) continue;
 
-            bool shouldexist = false;
+            string[] pos = child.name.Replace("Chunk ", "").Split(',');
+            int x = int.Parse(pos[0]);
+            int y = int.Parse(pos[1]);
 
-            for (var x = centerx - distance; x < centerx + 1 + distance; x++)
-            {
-                for (var y = centery - distance; y < centery + 1 + distance; y++)
-                {
-                    if (child.name == "Chunk " + x + ", " + y) shouldexist = true;
-                }
-            }
-
-            if (!shouldexist) Destroy(child.gameObject);
+            if (x < centerx - distance || x > centerx + distance || y < centery - distance || y > centery + distance) Destroy(child.gameObject);
             else exists.Add(child.name);
         }
 
@@ -137,11 +104,6 @@ public class World : MonoBehaviour
                 Biome biome = Biomes.GetBiome((heightmap.GetNoise(x, y) * 64) + 64, (tempmap.GetNoise(x, y) * 5) + 5, (moisturemap.GetNoise(x, y) * 5) + 5);
 
                 float ylevel = Mathf.Round(biome.height + (noise.GetNoise(x, y) * biome.scale));
-
-                float airlevel = ylevel;
-                if (airlevel < 64) airlevel = 64;
-
-                for (var newy = airlevel + 1; newy < 128; newy++) SetBlock(new Vector3(x, newy, y), Blocks.Air);
 
                 SetBlock(new Vector3(x, ylevel, y), biome.topblock);
                 for (var newy = ylevel - 1; newy > ylevel - 5; newy--) SetBlock(new Vector3(x, newy, y), biome.middleblock);
