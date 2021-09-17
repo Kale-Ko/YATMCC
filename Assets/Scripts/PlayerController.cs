@@ -73,6 +73,17 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        if (transform.position.y < 64.25f)
+        {
+            firstPersonCamera.GetComponent<CameraController>().underwater = true;
+            thirdPersonCamera.GetComponent<CameraController>().underwater = true;
+        }
+        else
+        {
+            firstPersonCamera.GetComponent<CameraController>().underwater = false;
+            thirdPersonCamera.GetComponent<CameraController>().underwater = false;
+        }
+
         RaycastHit hit;
 
         if (Physics.Raycast(firstPersonCamera.transform.position, firstPersonCamera.transform.forward, out hit, 4f))

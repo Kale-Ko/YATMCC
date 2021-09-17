@@ -1,7 +1,13 @@
 ﻿using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 
 public class CameraController : MonoBehaviour
 {
+    public PostProcessProfile defaultlayer;
+    public PostProcessProfile underwaterlayer;
+
+    public bool underwater = false;
+
     public string type = "firstPerson";
 
     public float sensitivity = 200f;
@@ -37,6 +43,9 @@ public class CameraController : MonoBehaviour
         {
             transform.LookAt(transform.parent);
         }
+
+        if (underwater) transform.GetComponent<PostProcessVolume>().profile = underwaterlayer;
+        else transform.GetComponent<PostProcessVolume>().profile = defaultlayer;
 
         if (Input.GetKey(KeyCode.Z) && type == "firstPerson" && GetComponent<Camera>().enabled)
         {
