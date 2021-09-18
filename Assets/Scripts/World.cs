@@ -28,6 +28,13 @@ public class World : MonoBehaviour
     {
         Vector2 pos = new Vector2(Mathf.FloorToInt(player.transform.position.x / 16), Mathf.FloorToInt(player.transform.position.z / 16));
 
+        foreach (Transform child in transform)
+        {
+            if (!child.name.Contains("Chunk")) continue;
+
+            if (child.GetComponent<Chunk>().chunkx < pos.x - distance || child.GetComponent<Chunk>().chunkx > pos.x + distance || child.GetComponent<Chunk>().chunky < pos.y - distance || child.GetComponent<Chunk>().chunky > pos.y + distance) Destroy(child.gameObject);
+        }
+
         for (var x = pos.x - (distance + 1); x < pos.x + 2 + distance; x++)
         {
             for (var y = pos.y - (distance + 1); y < pos.y + 2 + distance; y++)
@@ -72,7 +79,7 @@ public class World : MonoBehaviour
         {
             for (var blocky = y * 16; blocky < (y + 1) * 16; blocky++)
             {
-                Biome biome = Biomes.GetBiome((heightmap.GetNoise(blockx, blocky) * 64) + 64, (tempmap.GetNoise(blockx, blocky) * 5) + 5, (moisturemap.GetNoise(blockx, blocky) * 5) + 5);
+                Biome biome = Biomes.GetBiome(Mathf.RoundToInt(heightmap.GetNoise(blockx, blocky) * 64) + 64, Mathf.RoundToInt(tempmap.GetNoise(blockx, blocky) * 5) + 5, Mathf.RoundToInt(moisturemap.GetNoise(blockx, blocky) * 5) + 5);
 
                 float ylevel = Mathf.Round(biome.height + (noise.GetNoise(blockx, blocky) * biome.scale));
 
