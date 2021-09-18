@@ -32,16 +32,7 @@ public class CameraController : MonoBehaviour
             xRotation = xRotation - Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime;
             xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-            if (!GetComponent<Camera>().enabled)
-            {
-                xRotation = 0f;
-            }
-
             transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
-        }
-        else if (type == "thirdPerson")
-        {
-            transform.LookAt(transform.parent);
         }
 
         if (underwater) transform.GetComponent<PostProcessVolume>().profile = underwaterlayer;

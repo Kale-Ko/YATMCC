@@ -7,8 +7,6 @@ public class World : MonoBehaviour
     public GameObject chunk;
     public GameObject player;
 
-    Vector2 lastpos = new Vector2(int.MaxValue, int.MaxValue);
-
     public int distance = 2;
 
     public int seed;
@@ -18,45 +16,25 @@ public class World : MonoBehaviour
     void Start()
     {
         seed = Random.Range(int.MinValue, int.MaxValue);
+
+        GenerateWorld(true);
+
+        InvokeRepeating("UpdateWorld", 0.5f, 0.25f);
     }
 
-    void Update()
+    void UpdateWorld() { GenerateWorld(false); }
+
+    public void GenerateWorld(bool full)
     {
         Vector2 pos = new Vector2(Mathf.FloorToInt(player.transform.position.x / 16), Mathf.FloorToInt(player.transform.position.z / 16));
 
-        if (pos != lastpos)
+        for (var x = pos.x - (distance + 1); x < pos.x + 2 + distance; x++)
         {
-            lastpos = pos;
-
-            GenerateWorld((int)pos.x, (int)pos.y);
-        }
-    }
-
-    public void GenerateWorld(int centerx, int centery)
-    {
-        List<string> exists = new List<string>();
-
-        foreach (Transform child in transform)
-        {
-            if (!child.name.Contains("Chunk")) continue;
-
-            string[] pos = child.name.Replace("Chunk ", "").Split(',');
-            int x = int.Parse(pos[0]);
-            int y = int.Parse(pos[1]);
-
-            if (x < centerx - distance || x > centerx + distance || y < centery - distance || y > centery + distance) Destroy(child.gameObject);
-            else exists.Add(child.name);
-        }
-
-        for (var x = centerx - (distance + 1); x < centerx + 2 + distance; x++)
-        {
-            for (var y = centery - (distance + 1); y < centery + 2 + distance; y++)
+            for (var y = pos.y - (distance + 1); y < pos.y + 2 + distance; y++)
             {
-                if (exists.Contains("Chunk " + x + ", " + y)) continue;
+                GenerateChunk(x, y);
 
-                Generate(x, y);
-
-                if (x < centerx - distance || x > centerx + distance || y < centery - distance || y > centery + distance) continue;
+                if (x < pos.x - distance || x > pos.x + distance || y < pos.y - distance || y > pos.y + distance || GameObject.Find("/World/Chunk " + x + ", " + y) != null) continue;
 
                 GameObject newchunk = Instantiate(chunk);
                 newchunk.name = "Chunk " + x + ", " + y;
@@ -65,23 +43,16 @@ public class World : MonoBehaviour
                 newchunk.transform.GetComponent<Chunk>().chunkx = x;
                 newchunk.transform.GetComponent<Chunk>().chunky = y;
                 newchunk.transform.GetComponent<Chunk>().Render();
+
+                if (!full) return;
             }
         }
     }
 
-    public Block GetBlock(Vector3 pos) { return blocks[pos]; }
-
-    public void SetBlock(Vector3 pos, Block block)
+    public void GenerateChunk(float x, float y)
     {
-        if (blocks.ContainsKey(pos)) return;
+        if (blocks.ContainsKey(new Vector3(x * 16, 0, y * 16))) return;
 
-        blocks.Add(pos, block);
-    }
-
-    public void RemoveBlock(Vector3 pos) { blocks.Remove(pos); SetBlock(pos, Blocks.Air); }
-
-    public void Generate(int chunkx, int chunky)
-    {
         Noise noise = new Noise(seed);
         noise.SetNoiseType(Noise.NoiseType.Perlin);
 
@@ -97,21 +68,32 @@ public class World : MonoBehaviour
         moisturemap.SetNoiseType(Noise.NoiseType.Perlin);
         moisturemap.SetFrequency(1);
 
-        for (var x = chunkx * 16; x < (chunkx + 1) * 16; x++)
+        for (var blockx = x * 16; blockx < (x + 1) * 16; blockx++)
         {
-            for (var y = chunky * 16; y < (chunky + 1) * 16; y++)
+            for (var blocky = y * 16; blocky < (y + 1) * 16; blocky++)
             {
-                Biome biome = Biomes.GetBiome((heightmap.GetNoise(x, y) * 64) + 64, (tempmap.GetNoise(x, y) * 5) + 5, (moisturemap.GetNoise(x, y) * 5) + 5);
+                Biome biome = Biomes.GetBiome((heightmap.GetNoise(blockx, blocky) * 64) + 64, (tempmap.GetNoise(blockx, blocky) * 5) + 5, (moisturemap.GetNoise(blockx, blocky) * 5) + 5);
 
-                float ylevel = Mathf.Round(biome.height + (noise.GetNoise(x, y) * biome.scale));
+                float ylevel = Mathf.Round(biome.height + (noise.GetNoise(blockx, blocky) * biome.scale));
 
-                SetBlock(new Vector3(x, ylevel, y), biome.topblock);
-                for (var newy = ylevel - 1; newy > ylevel - 5; newy--) SetBlock(new Vector3(x, newy, y), biome.middleblock);
-                for (var newy = ylevel - 5; newy > 0; newy--) SetBlock(new Vector3(x, newy, y), biome.bottomblock);
-                SetBlock(new Vector3(x, 0, y), Blocks.Bedrock);
+                SetBlock(new Vector3(blockx, ylevel, blocky), biome.topblock);
+                for (var newy = ylevel - 1; newy > ylevel - 5; newy--) SetBlock(new Vector3(blockx, newy, blocky), biome.middleblock);
+                for (var newy = ylevel - 5; newy > 0; newy--) SetBlock(new Vector3(blockx, newy, blocky), biome.bottomblock);
+                SetBlock(new Vector3(blockx, 0, blocky), Blocks.Bedrock);
 
-                for (var newy = 64; newy > ylevel; newy--) SetBlock(new Vector3(x, newy, y), Blocks.Water);
+                for (var newy = 64; newy > ylevel; newy--) SetBlock(new Vector3(blockx, newy, blocky), Blocks.Water);
             }
         }
     }
+
+    public Block GetBlock(Vector3 pos) { return blocks[pos]; }
+
+    public void SetBlock(Vector3 pos, Block block)
+    {
+        if (blocks.ContainsKey(pos)) return;
+
+        blocks.Add(pos, block);
+    }
+
+    public void RemoveBlock(Vector3 pos) { blocks.Remove(pos); SetBlock(pos, Blocks.Air); }
 }

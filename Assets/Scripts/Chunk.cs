@@ -5,8 +5,8 @@ public class Chunk : MonoBehaviour
 {
     public World world;
 
-    public int chunkx;
-    public int chunky;
+    public float chunkx;
+    public float chunky;
 
     public void Render()
     {
@@ -42,7 +42,7 @@ public class Chunk : MonoBehaviour
                             vertices.Add(blockpos + new Vector3(1, 1, 0));
                             numFaces++;
 
-                            uvs.AddRange(GetUV("top", world.blocks[blockpos]));
+                            uvs.AddRange(Blocks.GetUV("top", world.blocks[blockpos]));
                         }
 
                         if (y == 0 || !IsBlock(new Vector3(x, y - 1, z)))
@@ -53,7 +53,7 @@ public class Chunk : MonoBehaviour
                             vertices.Add(blockpos + new Vector3(0, 0, 1));
                             numFaces++;
 
-                            uvs.AddRange(GetUV("bottom", world.blocks[blockpos]));
+                            uvs.AddRange(Blocks.GetUV("bottom", world.blocks[blockpos]));
                         }
 
                         if (!IsBlock(new Vector3(x, y, z - 1)))
@@ -64,7 +64,7 @@ public class Chunk : MonoBehaviour
                             vertices.Add(blockpos + new Vector3(1, 0, 0));
                             numFaces++;
 
-                            uvs.AddRange(GetUV("side", world.blocks[blockpos]));
+                            uvs.AddRange(Blocks.GetUV("side", world.blocks[blockpos]));
                         }
 
                         if (!IsBlock(new Vector3(x, y, z + 1)))
@@ -75,7 +75,7 @@ public class Chunk : MonoBehaviour
                             vertices.Add(blockpos + new Vector3(0, 0, 1));
                             numFaces++;
 
-                            uvs.AddRange(GetUV("side", world.blocks[blockpos]));
+                            uvs.AddRange(Blocks.GetUV("side", world.blocks[blockpos]));
                         }
 
                         if (!IsBlock(new Vector3(x - 1, y, z)))
@@ -86,7 +86,7 @@ public class Chunk : MonoBehaviour
                             vertices.Add(blockpos + new Vector3(0, 0, 0));
                             numFaces++;
 
-                            uvs.AddRange(GetUV("side", world.blocks[blockpos]));
+                            uvs.AddRange(Blocks.GetUV("side", world.blocks[blockpos]));
                         }
 
                         if (!IsBlock(new Vector3(x + 1, y, z)))
@@ -97,7 +97,7 @@ public class Chunk : MonoBehaviour
                             vertices.Add(blockpos + new Vector3(1, 0, 1));
                             numFaces++;
 
-                            uvs.AddRange(GetUV("side", world.blocks[blockpos]));
+                            uvs.AddRange(Blocks.GetUV("side", world.blocks[blockpos]));
                         }
 
                         int tl = vertices.Count - 4 * numFaces;
@@ -118,7 +118,7 @@ public class Chunk : MonoBehaviour
                             watervertices.Add(blockpos + new Vector3(1, 1, 0));
                             numFaces++;
 
-                            wateruvs.AddRange(GetUV("top", world.blocks[blockpos]));
+                            wateruvs.AddRange(Blocks.GetUV("top", world.blocks[blockpos]));
                         }
 
                         if (y == 0 || !IsWater(new Vector3(x, y - 1, z)))
@@ -129,7 +129,7 @@ public class Chunk : MonoBehaviour
                             watervertices.Add(blockpos + new Vector3(0, 0, 1));
                             numFaces++;
 
-                            wateruvs.AddRange(GetUV("bottom", world.blocks[blockpos]));
+                            wateruvs.AddRange(Blocks.GetUV("bottom", world.blocks[blockpos]));
                         }
 
                         if (!IsWater(new Vector3(x, y, z - 1)))
@@ -140,7 +140,7 @@ public class Chunk : MonoBehaviour
                             watervertices.Add(blockpos + new Vector3(1, 0, 0));
                             numFaces++;
 
-                            wateruvs.AddRange(GetUV("side", world.blocks[blockpos]));
+                            wateruvs.AddRange(Blocks.GetUV("side", world.blocks[blockpos]));
                         }
 
                         if (!IsWater(new Vector3(x, y, z + 1)))
@@ -151,7 +151,7 @@ public class Chunk : MonoBehaviour
                             watervertices.Add(blockpos + new Vector3(0, 0, 1));
                             numFaces++;
 
-                            wateruvs.AddRange(GetUV("side", world.blocks[blockpos]));
+                            wateruvs.AddRange(Blocks.GetUV("side", world.blocks[blockpos]));
                         }
 
                         if (!IsWater(new Vector3(x - 1, y, z)))
@@ -162,7 +162,7 @@ public class Chunk : MonoBehaviour
                             watervertices.Add(blockpos + new Vector3(0, 0, 0));
                             numFaces++;
 
-                            wateruvs.AddRange(GetUV("side", world.blocks[blockpos]));
+                            wateruvs.AddRange(Blocks.GetUV("side", world.blocks[blockpos]));
                         }
 
                         if (!IsWater(new Vector3(x + 1, y, z)))
@@ -173,7 +173,7 @@ public class Chunk : MonoBehaviour
                             watervertices.Add(blockpos + new Vector3(1, 0, 1));
                             numFaces++;
 
-                            wateruvs.AddRange(GetUV("side", world.blocks[blockpos]));
+                            wateruvs.AddRange(Blocks.GetUV("side", world.blocks[blockpos]));
                         }
 
                         int tl = watervertices.Count - 4 * numFaces;
@@ -206,7 +206,7 @@ public class Chunk : MonoBehaviour
         transform.GetChild(1).GetComponent<MeshFilter>().mesh = watermesh;
     }
 
-    public bool IsBlock(Vector3 pos)
+    bool IsBlock(Vector3 pos)
     {
         bool exists = world.blocks.ContainsKey(pos);
 
@@ -214,28 +214,11 @@ public class Chunk : MonoBehaviour
         else return world.blocks[pos] != Blocks.Water;
     }
 
-    public bool IsWater(Vector3 pos)
+    bool IsWater(Vector3 pos)
     {
         bool exists = world.blocks.ContainsKey(pos);
 
         if (!exists) return exists;
         else return world.blocks[pos] == Blocks.Water;
-    }
-
-    public Vector2[] GetUV(string side, Block block)
-    {
-        int x = 1;
-        int y = 0;
-
-        if (side == "top") { x = block.toptexturex; y = block.toptexturey; }
-        else if (side == "bottom") { x = block.bottomtexturex; y = block.bottomtexturey; }
-        else if (side == "side") { x = block.sidetexturex; y = block.sidetexturey; }
-
-        return new Vector2[] {
-            new Vector2(x / 16f + .001f, y / 16f + .001f),
-            new Vector2(x / 16f + .001f, (y + 1) / 16f - .001f),
-            new Vector2((x + 1) / 16f - .001f, (y + 1) / 16f - .001f),
-            new Vector2((x + 1) / 16f - .001f, y / 16f + .001f)
-        };
     }
 }
