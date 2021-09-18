@@ -1,7 +1,9 @@
 using UnityEngine;
 
-public class WorldTime : MonoBehaviour
+public class Sky : MonoBehaviour
 {
+    public GameObject player;
+
     public float time = 0;
 
     public int day = 0;
@@ -13,6 +15,8 @@ public class WorldTime : MonoBehaviour
 
     void Update()
     {
+        transform.position = player.transform.position;
+
         transform.GetChild(0).rotation = Quaternion.Euler(((time / 24000) * 360) - 90, 0, 0);
         transform.GetChild(1).rotation = Quaternion.Euler(((time / 24000) * 360) + 90, 0, 0);
         transform.GetComponent<MeshRenderer>().material.mainTextureOffset = new Vector2(time / 24000, 0);
