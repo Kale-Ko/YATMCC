@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public class Block
 {
     public int id;
@@ -42,6 +44,23 @@ public class Blocks
     public static Block Water = new Block(9, 9, 0);
 
     public static Block[] blocks = { Air, Bedrock, Stone, Dirt, Grass, Log, Leaves, Sand, Gravel, Water };
+
+    public static Vector2[] GetUV(string side, Block block)
+    {
+        int x = 1;
+        int y = 0;
+
+        if (side == "top") { x = block.toptexturex; y = block.toptexturey; }
+        else if (side == "bottom") { x = block.bottomtexturex; y = block.bottomtexturey; }
+        else if (side == "side") { x = block.sidetexturex; y = block.sidetexturey; }
+
+        return new Vector2[] {
+            new Vector2(x / 16f + .001f, y / 16f + .001f),
+            new Vector2(x / 16f + .001f, (y + 1) / 16f - .001f),
+            new Vector2((x + 1) / 16f - .001f, (y + 1) / 16f - .001f),
+            new Vector2((x + 1) / 16f - .001f, y / 16f + .001f)
+        };
+    }
 }
 
 public class Tree
@@ -118,12 +137,6 @@ public class Biomes
 
     public static Biome GetBiome(float height, float temp, float moisture)
     {
-        if (height == Biomes.Plains.height || (height > 64 && height < 76)) return Biomes.Plains;
-        else if (height == Biomes.Forest.height || (height > 70 && height < 100)) return Biomes.Forest;
-        else if (height == Biomes.Swamp.height || (height > 40 && height < 70)) return Biomes.Swamp;
-        else if (height == Biomes.Desert.height || (height > 64 && height < 76)) return Biomes.Desert;
-        else if (height == Biomes.Mountains.height || height > 76) return Biomes.Mountains;
-        else if (height == Biomes.Ocean.height || height < 64) return Biomes.Ocean;
-        else return Biomes.Void;
+        return Biomes.Plains;
     }
 }
