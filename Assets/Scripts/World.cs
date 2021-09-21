@@ -5,6 +5,8 @@ using FastNoiseLite;
 public class World : MonoBehaviour
 {
     public GameObject chunk;
+    public GameObject block;
+    public GameObject waterblock;
     public GameObject player;
 
     public int distance = 2;
@@ -13,13 +15,34 @@ public class World : MonoBehaviour
 
     public Dictionary<Vector3, Block> blocks = new Dictionary<Vector3, Block>();
 
+    Noise noise;
+
+    Noise heightmap;
+    Noise tempmap;
+    Noise moisturemap;
+
     void Start()
     {
-        seed = Random.Range(int.MinValue, int.MaxValue);
+        seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+
+        noise = noise = new Noise(seed);
+        noise.SetNoiseType(Noise.NoiseType.Perlin);
+
+        heightmap = new Noise(seed + 1);
+        heightmap.SetNoiseType(Noise.NoiseType.Perlin);
+        heightmap.SetFrequency(0.05f);
+
+        tempmap = new Noise(seed + 2);
+        tempmap.SetNoiseType(Noise.NoiseType.Perlin);
+        tempmap.SetFrequency(0.05f);
+
+        moisturemap = new Noise(seed + 3);
+        moisturemap.SetNoiseType(Noise.NoiseType.Perlin);
+        moisturemap.SetFrequency(0.05f);
 
         GenerateWorld(true);
 
-        InvokeRepeating("UpdateWorld", 0.5f, 0.25f);
+        InvokeRepeating("UpdateWorld", 0.5f, 0.1f);
     }
 
     void UpdateWorld() { GenerateWorld(false); }
@@ -59,21 +82,6 @@ public class World : MonoBehaviour
     public void GenerateChunk(float x, float y)
     {
         if (blocks.ContainsKey(new Vector3(x * 16, 0, y * 16))) return;
-
-        Noise noise = new Noise(seed);
-        noise.SetNoiseType(Noise.NoiseType.Perlin);
-
-        Noise heightmap = new Noise(seed + 1);
-        heightmap.SetNoiseType(Noise.NoiseType.Perlin);
-        heightmap.SetFrequency(1);
-
-        Noise tempmap = new Noise(seed + 2);
-        tempmap.SetNoiseType(Noise.NoiseType.Perlin);
-        tempmap.SetFrequency(1);
-
-        Noise moisturemap = new Noise(seed + 3);
-        moisturemap.SetNoiseType(Noise.NoiseType.Perlin);
-        moisturemap.SetFrequency(1);
 
         for (var blockx = x * 16; blockx < (x + 1) * 16; blockx++)
         {

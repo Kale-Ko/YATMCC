@@ -1,5 +1,6 @@
 // From https://github.com/Auburn/FastNoiseLite/blob/master/CSharp/FastNoiseLite.cs
 // Added namespace and changed class name to work with Unity
+// Modified to add getters to some vars
 
 // MIT License
 //
@@ -165,12 +166,28 @@ namespace FastNoiseLite
         public void SetSeed(int seed) { mSeed = seed; }
 
         /// <summary>
+        /// gets seed used for all noise types
+        /// </summary>
+        /// <remarks>
+        /// Default: 1337
+        /// </remarks>
+        public int GetSeed() { return mSeed; }
+
+        /// <summary>
         /// Sets frequency for all noise types
         /// </summary>
         /// <remarks>
         /// Default: 0.01
         /// </remarks>
         public void SetFrequency(float frequency) { mFrequency = frequency; }
+
+        /// <summary>
+        /// Gets frequency for all noise types
+        /// </summary>
+        /// <remarks>
+        /// Default: 0.01
+        /// </remarks>
+        public float GetFrequency() { return mFrequency; }
 
         /// <summary>
         /// Sets noise algorithm used for GetNoise(...)
@@ -183,6 +200,14 @@ namespace FastNoiseLite
             mNoiseType = noiseType;
             UpdateTransformType3D();
         }
+
+        /// <summary>
+        /// Sets noise algorithm used for GetNoise(...)
+        /// </summary>
+        /// <remarks>
+        /// Default: OpenSimplex2
+        /// </remarks>
+        public NoiseType GetNoiseType() { return mNoiseType; }
 
         /// <summary>
         /// Sets domain rotation type for 3D Noise and 3D DomainWarp.
