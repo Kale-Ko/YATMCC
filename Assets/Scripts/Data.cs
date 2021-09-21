@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Block
@@ -129,31 +128,24 @@ public class Biomes
     public static Biome Void = new Biome(0, 0, 0, 0, Blocks.Air, Blocks.Air, Blocks.Air, Trees.None, 0);
     public static Biome Plains = new Biome(70, 5, 3, 5, Blocks.Grass, Blocks.Dirt, Blocks.Stone, Trees.None, 0);
     public static Biome Forest = new Biome(76, 4, 5, 8, Blocks.Grass, Blocks.Dirt, Blocks.Stone, Trees.Oak, 3);
-    public static Biome Swamp = new Biome(64, 2, 8, 8, Blocks.Grass, Blocks.Dirt, Blocks.Stone, Trees.Oak, 3);
+    public static Biome Swamp = new Biome(64, 6, 7, 8, Blocks.Grass, Blocks.Dirt, Blocks.Stone, Trees.Oak, 3);
     public static Biome Desert = new Biome(68, 8, 1, 5, Blocks.Sand, Blocks.Sand, Blocks.Stone, Trees.Cactus, 1);
-    public static Biome Mountains = new Biome(100, 3, 3, 20, Blocks.Stone, Blocks.Stone, Blocks.Stone, Trees.None, 0);
-    public static Biome Ocean = new Biome(40, 4, 10, 4, Blocks.Gravel, Blocks.Stone, Blocks.Stone, Trees.None, 0);
+    public static Biome Mountains = new Biome(100, 2, 4, 20, Blocks.Stone, Blocks.Stone, Blocks.Stone, Trees.None, 0);
+    public static Biome Ocean = new Biome(40, 3, 9, 4, Blocks.Gravel, Blocks.Stone, Blocks.Stone, Trees.None, 0);
 
     public static Biome[] biomes = { Plains, Forest, Swamp, Desert, Mountains, Ocean };
 
+    public static BVP[] heights = { new BVP(Plains, Plains.height), new BVP(Forest, Forest.height), new BVP(Swamp, Swamp.height), new BVP(Desert, Desert.height), new BVP(Mountains, Mountains.height), new BVP(Ocean, Ocean.height) };
+    public static BVP[] temps = { new BVP(Plains, Plains.temperature), new BVP(Forest, Forest.temperature), new BVP(Swamp, Swamp.temperature), new BVP(Desert, Desert.temperature), new BVP(Mountains, Mountains.temperature), new BVP(Ocean, Ocean.temperature) };
+    public static BVP[] moistures = { new BVP(Plains, Plains.moisture), new BVP(Forest, Forest.moisture), new BVP(Swamp, Swamp.moisture), new BVP(Desert, Desert.moisture), new BVP(Mountains, Mountains.moisture), new BVP(Ocean, Ocean.moisture) };
+
     public static Biome GetBiome(int height, int temp, int moisture)
     {
-        List<BVP> heights = new List<BVP>();
-        List<BVP> temps = new List<BVP>();
-        List<BVP> moistures = new List<BVP>();
+        BVP closestheight = FindClosest(heights, height);
+        BVP closesttemp = FindClosest(temps, temp);
+        BVP closestmoisture = FindClosest(moistures, moisture);
 
-        foreach (Biome biome in biomes)
-        {
-            heights.Add(new BVP(biome, biome.height));
-            temps.Add(new BVP(biome, biome.temperature));
-            moistures.Add(new BVP(biome, biome.moisture));
-        }
-
-        BVP closestheight = FindClosest(heights.ToArray(), height);
-        BVP closesttemp = FindClosest(temps.ToArray(), temp);
-        BVP closestmoisture = FindClosest(moistures.ToArray(), moisture);
-
-        return closesttemp.key;
+        return closestheight.key;
     }
 
     public struct BVP
