@@ -498,7 +498,7 @@ MonoBehaviour:
   underwaterlayer: {fileID: 11400000, guid: 6a9129a1f592634458700e47d1b15d65, type: 2}
   underwater: 0
   type: firstPerson
-  sensitivity: 200
+  sensitivity: 8
   fieldOfView: 110
   zoomedFieldOfView: 30
 --- !u!114 &963194230
@@ -863,7 +863,7 @@ MonoBehaviour:
   underwaterlayer: {fileID: 11400000, guid: 6a9129a1f592634458700e47d1b15d65, type: 2}
   underwater: 0
   type: thirdPerson
-  sensitivity: 200
+  sensitivity: 8
   fieldOfView: 110
   zoomedFieldOfView: 30
 --- !u!114 &1557571851
