@@ -8,7 +8,7 @@ public class Chunk : MonoBehaviour
     public float chunkx;
     public float chunky;
 
-    public void Render()
+    Mesh GenerateMesh(bool water)
     {
         Mesh mesh = new Mesh();
 
@@ -30,7 +30,7 @@ public class Chunk : MonoBehaviour
                 {
                     Vector3 blockpos = new Vector3(x, y, z);
 
-                    if (IsBlock(blockpos))
+                    if (IsBlock(blockpos) && !water)
                     {
                         int numFaces = 0;
 
@@ -106,7 +106,7 @@ public class Chunk : MonoBehaviour
                             triangles.AddRange(new int[] { tl + i * 4, tl + i * 4 + 1, tl + i * 4 + 2, tl + i * 4, tl + i * 4 + 2, tl + i * 4 + 3 });
                         }
                     }
-                    else if (IsWater(blockpos))
+                    else if (IsWater(blockpos) && water)
                     {
                         int numFaces = 0;
 
@@ -193,15 +193,24 @@ public class Chunk : MonoBehaviour
 
         mesh.RecalculateNormals();
 
-        transform.GetChild(0).GetComponent<MeshFilter>().mesh = mesh;
-        transform.GetChild(0).GetComponent<MeshCollider>().sharedMesh = mesh;
-
         watermesh.name = "Water Chunk " + chunkx + " " + chunky;
         watermesh.vertices = watervertices.ToArray();
         watermesh.triangles = watertriangles.ToArray();
         watermesh.uv = wateruvs.ToArray();
 
         watermesh.RecalculateNormals();
+
+        if (!water) return mesh;
+        else return watermesh;
+    }
+
+    public void Render()
+    {
+        Mesh mesh = GenerateMesh(false);
+        Mesh watermesh = GenerateMesh(true);
+
+        transform.GetChild(0).GetComponent<MeshFilter>().mesh = mesh;
+        transform.GetChild(0).GetComponent<MeshCollider>().sharedMesh = mesh;
 
         transform.GetChild(1).GetComponent<MeshFilter>().mesh = watermesh;
     }

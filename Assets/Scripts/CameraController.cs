@@ -10,7 +10,7 @@ public class CameraController : MonoBehaviour
 
     public string type = "firstPerson";
 
-    public float sensitivity = 200f;
+    public float sensitivity = 8f;
 
     public float fieldOfView = 110f;
 
@@ -27,9 +27,9 @@ public class CameraController : MonoBehaviour
     {
         if (type == "firstPerson")
         {
-            transform.parent.Rotate(Vector3.up * Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime);
+            transform.parent.Rotate(Vector3.up * Input.GetAxis("Mouse X") * sensitivity);
 
-            xRotation = xRotation - Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime;
+            xRotation = xRotation - Input.GetAxis("Mouse Y") * sensitivity;
             xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
             transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
