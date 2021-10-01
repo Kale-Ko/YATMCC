@@ -1,6 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.Rendering.PostProcessing;
 
+public enum CameraType
+{
+    FirstPerson,
+    ThirdPerson
+}
+
 public class CameraController : MonoBehaviour
 {
     public PostProcessProfile defaultlayer;
@@ -8,12 +14,11 @@ public class CameraController : MonoBehaviour
 
     public bool underwater = false;
 
-    public string type = "firstPerson";
+    public CameraType type = CameraType.FirstPerson;
 
     public float sensitivity = 8f;
 
     public float fieldOfView = 110f;
-
     public float zoomedFieldOfView = 30f;
 
     float xRotation = 0f;
@@ -25,7 +30,7 @@ public class CameraController : MonoBehaviour
 
     public void Update()
     {
-        if (type == "firstPerson")
+        if (type == CameraType.FirstPerson)
         {
             transform.parent.Rotate(Vector3.up * Input.GetAxis("Mouse X") * sensitivity);
 
@@ -38,7 +43,7 @@ public class CameraController : MonoBehaviour
         if (underwater) transform.GetComponent<PostProcessVolume>().profile = underwaterlayer;
         else transform.GetComponent<PostProcessVolume>().profile = defaultlayer;
 
-        if (Input.GetKey(KeyCode.Z) && type == "firstPerson" && GetComponent<Camera>().enabled)
+        if (Input.GetKey(KeyCode.Z) && type == CameraType.FirstPerson && GetComponent<Camera>().enabled)
         {
             transform.GetComponent<Camera>().fieldOfView = zoomedFieldOfView;
         }

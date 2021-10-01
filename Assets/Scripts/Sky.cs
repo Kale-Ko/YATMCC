@@ -2,10 +2,7 @@ using UnityEngine;
 
 public class Sky : MonoBehaviour
 {
-    public GameObject player;
-
     public float time = 0;
-
     public int day = 0;
 
     void Start()
@@ -15,7 +12,7 @@ public class Sky : MonoBehaviour
 
     void Update()
     {
-        transform.position = player.transform.position;
+        transform.position = PlayerController.Instance.transform.position;
 
         transform.GetChild(0).rotation = Quaternion.Euler(((time / 24000) * 360) - 90, 0, 0);
         transform.GetChild(1).rotation = Quaternion.Euler(((time / 24000) * 360) + 90, 0, 0);
