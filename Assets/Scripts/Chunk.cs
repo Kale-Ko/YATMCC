@@ -3,20 +3,17 @@ using UnityEngine;
 
 public class Chunk : MonoBehaviour
 {
-    public World world;
-
     public float chunkx;
     public float chunky;
 
-    Mesh GenerateMesh(bool water)
+    Mesh[] GenerateMeshes()
     {
-        Mesh mesh = new Mesh();
-
-        List<Vector3> vertices = new List<Vector3>();
-        List<int> triangles = new List<int>();
-        List<Vector2> uvs = new List<Vector2>();
-
+        Mesh landmesh = new Mesh();
         Mesh watermesh = new Mesh();
+
+        List<Vector3> landvertices = new List<Vector3>();
+        List<int> landtriangles = new List<int>();
+        List<Vector2> landuvs = new List<Vector2>();
 
         List<Vector3> watervertices = new List<Vector3>();
         List<int> watertriangles = new List<int>();
@@ -30,87 +27,87 @@ public class Chunk : MonoBehaviour
                 {
                     Vector3 blockpos = new Vector3(x, y, z);
 
-                    if (IsBlock(blockpos) && !water)
+                    if (World.Instance.IsBlock(blockpos))
                     {
                         int numFaces = 0;
 
-                        if (y == 128 || !IsBlock(new Vector3(x, y + 1, z)))
+                        if (y == 128 || !World.Instance.IsBlock(new Vector3(x, y + 1, z)))
                         {
-                            vertices.Add(blockpos + new Vector3(0, 1, 0));
-                            vertices.Add(blockpos + new Vector3(0, 1, 1));
-                            vertices.Add(blockpos + new Vector3(1, 1, 1));
-                            vertices.Add(blockpos + new Vector3(1, 1, 0));
+                            landvertices.Add(blockpos + new Vector3(0, 1, 0));
+                            landvertices.Add(blockpos + new Vector3(0, 1, 1));
+                            landvertices.Add(blockpos + new Vector3(1, 1, 1));
+                            landvertices.Add(blockpos + new Vector3(1, 1, 0));
                             numFaces++;
 
-                            uvs.AddRange(Blocks.GetUV("top", world.blocks[blockpos]));
+                            landuvs.AddRange(Blocks.GetUV("top", World.Instance.GetBlock(blockpos)));
                         }
 
-                        if (y == 0 || !IsBlock(new Vector3(x, y - 1, z)))
+                        if (y == 0 || !World.Instance.IsBlock(new Vector3(x, y - 1, z)))
                         {
-                            vertices.Add(blockpos + new Vector3(0, 0, 0));
-                            vertices.Add(blockpos + new Vector3(1, 0, 0));
-                            vertices.Add(blockpos + new Vector3(1, 0, 1));
-                            vertices.Add(blockpos + new Vector3(0, 0, 1));
+                            landvertices.Add(blockpos + new Vector3(0, 0, 0));
+                            landvertices.Add(blockpos + new Vector3(1, 0, 0));
+                            landvertices.Add(blockpos + new Vector3(1, 0, 1));
+                            landvertices.Add(blockpos + new Vector3(0, 0, 1));
                             numFaces++;
 
-                            uvs.AddRange(Blocks.GetUV("bottom", world.blocks[blockpos]));
+                            landuvs.AddRange(Blocks.GetUV("bottom", World.Instance.GetBlock(blockpos)));
                         }
 
-                        if (!IsBlock(new Vector3(x, y, z - 1)))
+                        if (!World.Instance.IsBlock(new Vector3(x, y, z - 1)))
                         {
-                            vertices.Add(blockpos + new Vector3(0, 0, 0));
-                            vertices.Add(blockpos + new Vector3(0, 1, 0));
-                            vertices.Add(blockpos + new Vector3(1, 1, 0));
-                            vertices.Add(blockpos + new Vector3(1, 0, 0));
+                            landvertices.Add(blockpos + new Vector3(0, 0, 0));
+                            landvertices.Add(blockpos + new Vector3(0, 1, 0));
+                            landvertices.Add(blockpos + new Vector3(1, 1, 0));
+                            landvertices.Add(blockpos + new Vector3(1, 0, 0));
                             numFaces++;
 
-                            uvs.AddRange(Blocks.GetUV("side", world.blocks[blockpos]));
+                            landuvs.AddRange(Blocks.GetUV("side", World.Instance.GetBlock(blockpos)));
                         }
 
-                        if (!IsBlock(new Vector3(x, y, z + 1)))
+                        if (!World.Instance.IsBlock(new Vector3(x, y, z + 1)))
                         {
-                            vertices.Add(blockpos + new Vector3(1, 0, 1));
-                            vertices.Add(blockpos + new Vector3(1, 1, 1));
-                            vertices.Add(blockpos + new Vector3(0, 1, 1));
-                            vertices.Add(blockpos + new Vector3(0, 0, 1));
+                            landvertices.Add(blockpos + new Vector3(1, 0, 1));
+                            landvertices.Add(blockpos + new Vector3(1, 1, 1));
+                            landvertices.Add(blockpos + new Vector3(0, 1, 1));
+                            landvertices.Add(blockpos + new Vector3(0, 0, 1));
                             numFaces++;
 
-                            uvs.AddRange(Blocks.GetUV("side", world.blocks[blockpos]));
+                            landuvs.AddRange(Blocks.GetUV("side", World.Instance.GetBlock(blockpos)));
                         }
 
-                        if (!IsBlock(new Vector3(x - 1, y, z)))
+                        if (!World.Instance.IsBlock(new Vector3(x - 1, y, z)))
                         {
-                            vertices.Add(blockpos + new Vector3(0, 0, 1));
-                            vertices.Add(blockpos + new Vector3(0, 1, 1));
-                            vertices.Add(blockpos + new Vector3(0, 1, 0));
-                            vertices.Add(blockpos + new Vector3(0, 0, 0));
+                            landvertices.Add(blockpos + new Vector3(0, 0, 1));
+                            landvertices.Add(blockpos + new Vector3(0, 1, 1));
+                            landvertices.Add(blockpos + new Vector3(0, 1, 0));
+                            landvertices.Add(blockpos + new Vector3(0, 0, 0));
                             numFaces++;
 
-                            uvs.AddRange(Blocks.GetUV("side", world.blocks[blockpos]));
+                            landuvs.AddRange(Blocks.GetUV("side", World.Instance.GetBlock(blockpos)));
                         }
 
-                        if (!IsBlock(new Vector3(x + 1, y, z)))
+                        if (!World.Instance.IsBlock(new Vector3(x + 1, y, z)))
                         {
-                            vertices.Add(blockpos + new Vector3(1, 0, 0));
-                            vertices.Add(blockpos + new Vector3(1, 1, 0));
-                            vertices.Add(blockpos + new Vector3(1, 1, 1));
-                            vertices.Add(blockpos + new Vector3(1, 0, 1));
+                            landvertices.Add(blockpos + new Vector3(1, 0, 0));
+                            landvertices.Add(blockpos + new Vector3(1, 1, 0));
+                            landvertices.Add(blockpos + new Vector3(1, 1, 1));
+                            landvertices.Add(blockpos + new Vector3(1, 0, 1));
                             numFaces++;
 
-                            uvs.AddRange(Blocks.GetUV("side", world.blocks[blockpos]));
+                            landuvs.AddRange(Blocks.GetUV("side", World.Instance.GetBlock(blockpos)));
                         }
 
-                        int tl = vertices.Count - 4 * numFaces;
+                        int tl = landvertices.Count - 4 * numFaces;
                         for (int i = 0; i < numFaces; i++)
                         {
-                            triangles.AddRange(new int[] { tl + i * 4, tl + i * 4 + 1, tl + i * 4 + 2, tl + i * 4, tl + i * 4 + 2, tl + i * 4 + 3 });
+                            landtriangles.AddRange(new int[] { tl + i * 4, tl + i * 4 + 1, tl + i * 4 + 2, tl + i * 4, tl + i * 4 + 2, tl + i * 4 + 3 });
                         }
                     }
-                    else if (IsWater(blockpos) && water)
+                    else if (World.Instance.IsWater(blockpos))
                     {
                         int numFaces = 0;
 
-                        if (y == 128 || !IsWater(new Vector3(x, y + 1, z)))
+                        if (y == 128 || !World.Instance.IsWater(new Vector3(x, y + 1, z)))
                         {
                             watervertices.Add(blockpos + new Vector3(0, 1, 0));
                             watervertices.Add(blockpos + new Vector3(0, 1, 1));
@@ -118,10 +115,10 @@ public class Chunk : MonoBehaviour
                             watervertices.Add(blockpos + new Vector3(1, 1, 0));
                             numFaces++;
 
-                            wateruvs.AddRange(Blocks.GetUV("top", world.blocks[blockpos]));
+                            wateruvs.AddRange(Blocks.GetUV("top", World.Instance.GetBlock(blockpos)));
                         }
 
-                        if (y == 0 || !IsWater(new Vector3(x, y - 1, z)))
+                        if (y == 0 || !World.Instance.IsWater(new Vector3(x, y - 1, z)))
                         {
                             watervertices.Add(blockpos + new Vector3(0, 0, 0));
                             watervertices.Add(blockpos + new Vector3(1, 0, 0));
@@ -129,10 +126,10 @@ public class Chunk : MonoBehaviour
                             watervertices.Add(blockpos + new Vector3(0, 0, 1));
                             numFaces++;
 
-                            wateruvs.AddRange(Blocks.GetUV("bottom", world.blocks[blockpos]));
+                            wateruvs.AddRange(Blocks.GetUV("bottom", World.Instance.GetBlock(blockpos)));
                         }
 
-                        if (!IsWater(new Vector3(x, y, z - 1)))
+                        if (!World.Instance.IsWater(new Vector3(x, y, z - 1)))
                         {
                             watervertices.Add(blockpos + new Vector3(0, 0, 0));
                             watervertices.Add(blockpos + new Vector3(0, 1, 0));
@@ -140,10 +137,10 @@ public class Chunk : MonoBehaviour
                             watervertices.Add(blockpos + new Vector3(1, 0, 0));
                             numFaces++;
 
-                            wateruvs.AddRange(Blocks.GetUV("side", world.blocks[blockpos]));
+                            wateruvs.AddRange(Blocks.GetUV("side", World.Instance.GetBlock(blockpos)));
                         }
 
-                        if (!IsWater(new Vector3(x, y, z + 1)))
+                        if (!World.Instance.IsWater(new Vector3(x, y, z + 1)))
                         {
                             watervertices.Add(blockpos + new Vector3(1, 0, 1));
                             watervertices.Add(blockpos + new Vector3(1, 1, 1));
@@ -151,10 +148,10 @@ public class Chunk : MonoBehaviour
                             watervertices.Add(blockpos + new Vector3(0, 0, 1));
                             numFaces++;
 
-                            wateruvs.AddRange(Blocks.GetUV("side", world.blocks[blockpos]));
+                            wateruvs.AddRange(Blocks.GetUV("side", World.Instance.GetBlock(blockpos)));
                         }
 
-                        if (!IsWater(new Vector3(x - 1, y, z)))
+                        if (!World.Instance.IsWater(new Vector3(x - 1, y, z)))
                         {
                             watervertices.Add(blockpos + new Vector3(0, 0, 1));
                             watervertices.Add(blockpos + new Vector3(0, 1, 1));
@@ -162,10 +159,10 @@ public class Chunk : MonoBehaviour
                             watervertices.Add(blockpos + new Vector3(0, 0, 0));
                             numFaces++;
 
-                            wateruvs.AddRange(Blocks.GetUV("side", world.blocks[blockpos]));
+                            wateruvs.AddRange(Blocks.GetUV("side", World.Instance.GetBlock(blockpos)));
                         }
 
-                        if (!IsWater(new Vector3(x + 1, y, z)))
+                        if (!World.Instance.IsWater(new Vector3(x + 1, y, z)))
                         {
                             watervertices.Add(blockpos + new Vector3(1, 0, 0));
                             watervertices.Add(blockpos + new Vector3(1, 1, 0));
@@ -173,7 +170,7 @@ public class Chunk : MonoBehaviour
                             watervertices.Add(blockpos + new Vector3(1, 0, 1));
                             numFaces++;
 
-                            wateruvs.AddRange(Blocks.GetUV("side", world.blocks[blockpos]));
+                            wateruvs.AddRange(Blocks.GetUV("side", World.Instance.GetBlock(blockpos)));
                         }
 
                         int tl = watervertices.Count - 4 * numFaces;
@@ -186,48 +183,35 @@ public class Chunk : MonoBehaviour
             }
         }
 
-        mesh.name = "Chunk " + chunkx + " " + chunky;
-        mesh.vertices = vertices.ToArray();
-        mesh.triangles = triangles.ToArray();
-        mesh.uv = uvs.ToArray();
+        landmesh.name = "Land " + chunkx + " " + chunky;
+        landmesh.vertices = landvertices.ToArray();
+        landmesh.triangles = landtriangles.ToArray();
+        landmesh.uv = landuvs.ToArray();
 
-        mesh.RecalculateNormals();
-
-        watermesh.name = "Water Chunk " + chunkx + " " + chunky;
+        watermesh.name = "Water " + chunkx + " " + chunky;
         watermesh.vertices = watervertices.ToArray();
         watermesh.triangles = watertriangles.ToArray();
         watermesh.uv = wateruvs.ToArray();
 
-        watermesh.RecalculateNormals();
+        CombineInstance[] combinemeshes = new CombineInstance[2];
+        combinemeshes[0].mesh = landmesh;
+        combinemeshes[0].transform = transform.localToWorldMatrix;
+        combinemeshes[1].mesh = watermesh;
+        combinemeshes[1].transform = transform.localToWorldMatrix;
 
-        if (!water) return mesh;
-        else return watermesh;
+        Mesh fullmesh = new Mesh();
+        fullmesh.name = "Chunk " + chunkx + " " + chunky;
+        fullmesh.CombineMeshes(combinemeshes);
+        fullmesh.RecalculateNormals();
+
+        return new Mesh[] { fullmesh, landmesh, watermesh };
     }
 
     public void Render()
     {
-        Mesh mesh = GenerateMesh(false);
-        Mesh watermesh = GenerateMesh(true);
+        Mesh[] meshes = GenerateMeshes();
 
-        transform.GetChild(0).GetComponent<MeshFilter>().mesh = mesh;
-        transform.GetChild(0).GetComponent<MeshCollider>().sharedMesh = mesh;
-
-        transform.GetChild(1).GetComponent<MeshFilter>().mesh = watermesh;
-    }
-
-    bool IsBlock(Vector3 pos)
-    {
-        bool exists = world.blocks.ContainsKey(pos);
-
-        if (!exists) return exists;
-        else return world.blocks[pos] != Blocks.Water;
-    }
-
-    bool IsWater(Vector3 pos)
-    {
-        bool exists = world.blocks.ContainsKey(pos);
-
-        if (!exists) return exists;
-        else return world.blocks[pos] == Blocks.Water;
+        transform.GetComponent<MeshFilter>().mesh = meshes[0];
+        transform.GetComponent<MeshCollider>().sharedMesh = meshes[1];
     }
 }
