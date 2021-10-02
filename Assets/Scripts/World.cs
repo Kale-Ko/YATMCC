@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 using FastNoiseLite;
 
 public class World : MonoBehaviour
@@ -8,12 +9,12 @@ public class World : MonoBehaviour
 
     public GameObject chunkPrefab;
 
+    public bool titleScreen = false;
     public int distance = 2;
+    public int seed = 0;
 
     Dictionary<Vector2, GameObject> chunks = new Dictionary<Vector2, GameObject>();
     Dictionary<Vector3, Block> blocks = new Dictionary<Vector3, Block>();
-
-    int seed;
 
     Noise noise;
     Noise noise2;
@@ -26,7 +27,7 @@ public class World : MonoBehaviour
     {
         World.Instance = this;
 
-        seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+        if (!titleScreen) seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
 
         noise = new Noise(seed);
         noise.SetNoiseType(Noise.NoiseType.Perlin);
@@ -47,12 +48,42 @@ public class World : MonoBehaviour
         moisturemap.SetNoiseType(Noise.NoiseType.Perlin);
         moisturemap.SetFrequency(0.05f);
 
-        InvokeRepeating("GenerateWorld", 0.5f, 0.1f);
+        if (!titleScreen) InvokeRepeating("GenerateWorld", 0f, 0.1f);
+#if UNITY_EDITOR
+        else
+        {
+            GenerateWorld();
+
+            List<CombineInstance> toCombine = new List<CombineInstance>();
+
+            foreach (Transform child in transform)
+            {
+                if (!child.name.Contains("Chunk")) continue;
+
+                CombineInstance newCombine = new CombineInstance();
+                newCombine.mesh = child.GetComponent<MeshFilter>().mesh;
+                newCombine.transform = child.localToWorldMatrix;
+
+                toCombine.Add(newCombine);
+
+                Destroy(child.gameObject);
+            }
+
+            Mesh fullWorldMesh = new Mesh();
+            fullWorldMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+            fullWorldMesh.CombineMeshes(toCombine.ToArray());
+
+            transform.GetComponent<MeshFilter>().mesh = fullWorldMesh;
+
+            AssetDatabase.CreateAsset(fullWorldMesh, "Assets/Assets/TitleMenuWorld.asset");
+            AssetDatabase.SaveAssets();
+        }
+#endif
     }
 
     public void GenerateWorld()
     {
-        Vector2 pos = new Vector2(Mathf.FloorToInt(PlayerController.Instance.transform.position.x / 16), Mathf.FloorToInt(PlayerController.Instance.transform.position.z / 16));
+        Vector2 pos = (PlayerController.Instance != null ? new Vector2(Mathf.FloorToInt(PlayerController.Instance.transform.position.x / 16), Mathf.FloorToInt(PlayerController.Instance.transform.position.z / 16)) : new Vector2(0, 0));
 
         foreach (Transform child in transform)
         {
@@ -100,7 +131,7 @@ public class World : MonoBehaviour
         {
             for (var blocky = y * 16; blocky < (y + 1) * 16; blocky++)
             {
-                Biome biome = Biomes.Forest; // Biomes.GetBiome(Mathf.RoundToInt(heightmap.GetNoise(blockx, blocky) * 64) + 64, Mathf.RoundToInt(tempmap.GetNoise(blockx, blocky) * 5) + 5, Mathf.RoundToInt(moisturemap.GetNoise(blockx, blocky) * 5) + 5);
+                Biome biome = Biomes.Plains; // Biomes.GetBiome(Mathf.RoundToInt(heightmap.GetNoise(blockx, blocky) * 64) + 64, Mathf.RoundToInt(tempmap.GetNoise(blockx, blocky) * 5) + 5, Mathf.RoundToInt(moisturemap.GetNoise(blockx, blocky) * 5) + 5);
 
                 float ylevel = Mathf.Round(biome.height + ((noise.GetNoise(blockx, blocky) * biome.scale) * (noise2.GetNoise(blockx, blocky) * 2)));
 
@@ -111,7 +142,9 @@ public class World : MonoBehaviour
 
                 for (var newy = 64; newy > ylevel; newy--) SetBlock(new Vector3(blockx, newy, blocky), Blocks.Water);
 
-                if (Random.Range(0, 32 - (biome.treeamount * 2)) == 0 && ylevel > 64)
+                Random.InitState((seed + Mathf.RoundToInt(blockx)) - (Mathf.RoundToInt(blockx) * Mathf.RoundToInt(blocky)) - Mathf.RoundToInt(blocky));
+
+                if (ylevel > 64 && biome.tree != Trees.None && Random.Range(0, 32 - (biome.treeamount * 2)) == 0)
                 {
                     int height = Mathf.RoundToInt(ylevel) + biome.tree.height + Mathf.RoundToInt(Random.Range(-biome.tree.variation, biome.tree.variation));
                     for (var newy = ylevel; newy < height; newy++) SetBlock(new Vector3(blockx, newy, blocky), biome.tree.trunk);

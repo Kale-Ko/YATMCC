@@ -4,7 +4,8 @@ using UnityEngine.Rendering.PostProcessing;
 public enum CameraType
 {
     FirstPerson,
-    ThirdPerson
+    ThirdPerson,
+    MainMenu
 }
 
 public class CameraController : MonoBehaviour
@@ -25,7 +26,7 @@ public class CameraController : MonoBehaviour
 
     public void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
+        if (type == CameraType.FirstPerson || type == CameraType.ThirdPerson) Cursor.lockState = CursorLockMode.Locked;
     }
 
     public void Update()
@@ -39,11 +40,16 @@ public class CameraController : MonoBehaviour
 
             transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         }
+        else if (type == CameraType.MainMenu)
+        {
+            xRotation += sensitivity * Time.deltaTime;
+            transform.rotation = Quaternion.Euler(30, xRotation, 0);
+        }
 
         if (underwater) transform.GetComponent<PostProcessVolume>().profile = underwaterlayer;
         else transform.GetComponent<PostProcessVolume>().profile = defaultlayer;
 
-        if (Input.GetKey(KeyCode.Z) && type == CameraType.FirstPerson && GetComponent<Camera>().enabled)
+        if (Input.GetKey(KeyCode.Z) && type == CameraType.FirstPerson)
         {
             transform.GetComponent<Camera>().fieldOfView = zoomedFieldOfView;
         }
