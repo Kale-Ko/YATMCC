@@ -10,8 +10,8 @@ public class PlayerController : MonoBehaviour
 
     public float speed = 5f;
     public float sprintSpeed = 10f;
-    public float jumpPower = 7.2f;
-    public float gravity = 9.8f;
+    public float jumpPower = 8f;
+    public float gravity = 10f;
 
     Vector3 velocity;
 
