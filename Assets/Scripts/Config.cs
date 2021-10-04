@@ -7,7 +7,7 @@ public class Config : MonoBehaviour
 
     public static float sensitivity = 8f;
 
-    public static int distance = 2;
+    public static int distance = 1;
 
     public static void Setup()
     {
@@ -34,6 +34,13 @@ public class Config : MonoBehaviour
 
         foreach (var config in configs)
         {
+            if (!config.Contains("="))
+            {
+                if (config != "" && config != " ") Debug.LogWarning("Invalid line in config \"" + config + "\"");
+
+                continue;
+            }
+
             string key = config.Split('=')[0];
             string value = config.Split('=')[1];
 
