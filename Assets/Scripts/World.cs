@@ -10,7 +10,6 @@ public class World : MonoBehaviour
     public GameObject chunkPrefab;
 
     public bool titleScreen = false;
-    public int distance = 2;
     public int seed = 0;
 
     Dictionary<Vector2, GameObject> chunks = new Dictionary<Vector2, GameObject>();
@@ -89,20 +88,20 @@ public class World : MonoBehaviour
         {
             if (!child.name.Contains("Chunk")) continue;
 
-            if (child.GetComponent<Chunk>().chunkx < pos.x - distance || child.GetComponent<Chunk>().chunkx > pos.x + distance || child.GetComponent<Chunk>().chunky < pos.y - distance || child.GetComponent<Chunk>().chunky > pos.y + distance) child.GetComponent<MeshRenderer>().enabled = false;
+            if (child.GetComponent<Chunk>().chunkx < pos.x - Config.distance || child.GetComponent<Chunk>().chunkx > pos.x + Config.distance || child.GetComponent<Chunk>().chunky < pos.y - Config.distance || child.GetComponent<Chunk>().chunky > pos.y + Config.distance) child.GetComponent<MeshRenderer>().enabled = false;
         }
 
-        for (var x = pos.x - distance; x < pos.x + 1 + distance; x++)
+        for (var x = pos.x - Config.distance; x < pos.x + 1 + Config.distance; x++)
         {
-            for (var y = pos.y - distance; y < pos.y + 1 + distance; y++)
+            for (var y = pos.y - Config.distance; y < pos.y + 1 + Config.distance; y++)
             {
                 GenerateChunk(x, y);
             }
         }
 
-        for (var x = pos.x - distance; x < pos.x + 1 + distance; x++)
+        for (var x = pos.x - Config.distance; x < pos.x + 1 + Config.distance; x++)
         {
-            for (var y = pos.y - distance; y < pos.y + 1 + distance; y++)
+            for (var y = pos.y - Config.distance; y < pos.y + 1 + Config.distance; y++)
             {
                 if (chunks.ContainsKey(new Vector2(x, y)))
                 {

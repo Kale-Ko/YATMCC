@@ -17,32 +17,25 @@ public class CameraController : MonoBehaviour
 
     public CameraType type = CameraType.FirstPerson;
 
-    public float sensitivity = 8f;
-
     public float fieldOfView = 110f;
     public float zoomedFieldOfView = 30f;
 
     float xRotation = 0f;
 
-    public void Start()
-    {
-        if (type == CameraType.FirstPerson || type == CameraType.ThirdPerson) Cursor.lockState = CursorLockMode.Locked;
-    }
-
     public void Update()
     {
         if (type == CameraType.FirstPerson)
         {
-            transform.parent.Rotate(Vector3.up * Input.GetAxis("Mouse X") * sensitivity);
+            transform.parent.Rotate(Vector3.up * Input.GetAxis("Mouse X") * Config.sensitivity);
 
-            xRotation = xRotation - Input.GetAxis("Mouse Y") * sensitivity;
+            xRotation = xRotation - Input.GetAxis("Mouse Y") * Config.sensitivity;
             xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
             transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         }
         else if (type == CameraType.MainMenu)
         {
-            xRotation += sensitivity * Time.deltaTime;
+            xRotation += Config.sensitivity * Time.deltaTime;
             transform.rotation = Quaternion.Euler(30, xRotation, 0);
         }
 
