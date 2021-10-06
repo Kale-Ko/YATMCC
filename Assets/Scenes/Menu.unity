@@ -298,7 +298,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 1
+        m_CallState: 2
 --- !u!114 &707107924
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -611,7 +611,6 @@ MonoBehaviour:
   underwaterlayer: {fileID: 11400000, guid: 6a9129a1f592634458700e47d1b15d65, type: 2}
   underwater: 0
   type: 2
-  sensitivity: 4
   fieldOfView: 110
   zoomedFieldOfView: 30
 --- !u!20 &1226053756
@@ -842,7 +841,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 1
+        m_CallState: 2
 --- !u!114 &1341604670
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -993,7 +992,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chunkPrefab: {fileID: 5996309389191628120, guid: 94d4883e802b9c74fb024a316a4e5d47, type: 3}
   titleScreen: 1
-  distance: 3
   seed: 1
 --- !u!4 &1353469199
 Transform:
@@ -1573,11 +1571,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1840988221}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 41015527fe7da364f92159fe80d4848c, type: 3}
+  m_Script: {fileID: 11500000, guid: b382fbe1fcba1bf49b01fb5151a14c25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   pausable: 0
-  pauseMenuPrefab: {fileID: 0}
+  pauseMenu: {fileID: 0}
 --- !u!1 &2036065402
 GameObject:
   m_ObjectHideFlags: 0
@@ -1672,7 +1670,7 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
-        m_CallState: 1
+        m_CallState: 2
 --- !u!114 &2036065405
 MonoBehaviour:
   m_ObjectHideFlags: 0
