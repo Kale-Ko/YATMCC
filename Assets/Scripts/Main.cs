@@ -3,12 +3,17 @@ using UnityEngine.SceneManagement;
 
 public class Main : MonoBehaviour
 {
+    public static Main Instance;
+
     public bool pausable = false;
 
     public GameObject pauseMenu;
+    public bool paused { get { return pauseMenu.GetComponent<Canvas>().enabled; } set { pauseMenu.GetComponent<Canvas>().enabled = value; } }
 
     void Start()
     {
+        Main.Instance = this;
+
         Config.Setup();
     }
 
@@ -19,15 +24,15 @@ public class Main : MonoBehaviour
 
     public void Pause()
     {
-        if (pauseMenu.GetComponent<Canvas>().enabled)
+        if (paused)
         {
-            pauseMenu.GetComponent<Canvas>().enabled = false;
+            paused = false;
 
             Cursor.lockState = CursorLockMode.None;
         }
         else
         {
-            pauseMenu.GetComponent<Canvas>().enabled = true;
+            paused = true;
 
             Cursor.lockState = CursorLockMode.Locked;
         }

@@ -22,9 +22,9 @@ public class CameraController : MonoBehaviour
 
     float xRotation = 0f;
 
-    public void Update()
+    void Update()
     {
-        if (type == CameraType.FirstPerson)
+        if (type == CameraType.FirstPerson && !Main.Instance.paused)
         {
             transform.parent.Rotate(Vector3.up * Input.GetAxis("Mouse X") * Config.sensitivity);
 
@@ -32,23 +32,23 @@ public class CameraController : MonoBehaviour
             xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
             transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+
+            if (Input.GetKey(KeyCode.Z))
+            {
+                transform.GetComponent<Camera>().fieldOfView = zoomedFieldOfView;
+            }
+            else
+            {
+                transform.GetComponent<Camera>().fieldOfView = fieldOfView;
+            }
         }
         else if (type == CameraType.MainMenu)
         {
-            xRotation += Config.sensitivity * Time.deltaTime;
+            xRotation += 8 * Time.deltaTime;
             transform.rotation = Quaternion.Euler(30, xRotation, 0);
         }
 
         if (underwater) transform.GetComponent<PostProcessVolume>().profile = underwaterlayer;
         else transform.GetComponent<PostProcessVolume>().profile = defaultlayer;
-
-        if (Input.GetKey(KeyCode.Z) && type == CameraType.FirstPerson)
-        {
-            transform.GetComponent<Camera>().fieldOfView = zoomedFieldOfView;
-        }
-        else
-        {
-            transform.GetComponent<Camera>().fieldOfView = fieldOfView;
-        }
     }
 }
