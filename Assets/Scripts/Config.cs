@@ -7,7 +7,7 @@ public class Config : MonoBehaviour
 
     public static float sensitivity = 8f;
 
-    public static int distance = 1;
+    public static int distance = 2;
 
     public static void Setup()
     {

@@ -31,6 +31,8 @@ public class PlayerController : MonoBehaviour
 
     public void Update()
     {
+        if (Main.Instance.paused) return;
+
         onGround = Physics.CheckSphere(transform.GetChild(1).transform.position, 0.2f, ground) && velocity.y < 0;
 
         if (onGround)
