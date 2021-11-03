@@ -68,7 +68,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (transform.position.y < 64.25f)
+        if (World.Instance.IsWater(new Vector3(Mathf.Floor(transform.position.x), Mathf.Floor(transform.position.y + 0.75f), Mathf.Floor(transform.position.z))))
         {
             transform.GetChild(0).GetComponent<Camera>().GetComponent<CameraController>().underwater = true;
             transform.GetChild(0).GetChild(0).GetComponent<Camera>().GetComponent<CameraController>().underwater = true;
