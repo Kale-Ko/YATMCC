@@ -992,7 +992,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chunkPrefab: {fileID: 5996309389191628120, guid: 94d4883e802b9c74fb024a316a4e5d47, type: 3}
   titleScreen: 1
-  seed: 1
+  seed: 0
 --- !u!4 &1353469199
 Transform:
   m_ObjectHideFlags: 0
