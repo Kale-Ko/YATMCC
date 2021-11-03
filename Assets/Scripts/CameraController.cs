@@ -22,6 +22,11 @@ public class CameraController : MonoBehaviour
 
     float xRotation = 0f;
 
+    void Start()
+    {
+        if (type == CameraType.FirstPerson || type == CameraType.ThirdPerson) Cursor.lockState = CursorLockMode.Locked;
+    }
+
     void Update()
     {
         if (type == CameraType.FirstPerson && !Main.Instance.paused)
