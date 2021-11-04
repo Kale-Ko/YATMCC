@@ -152,12 +152,7 @@ public class World : MonoBehaviour
         else return 0;
     }
 
-    public Biome GetBiome(float x, float y)
-    {
-        Debug.Log((GetNoise(2, Mathf.RoundToInt(x), Mathf.RoundToInt(y))));
-
-        return Biomes.biomes[Mathf.FloorToInt((GetNoise(2, Mathf.RoundToInt(x), Mathf.RoundToInt(y)) * (Biomes.biomes.Length / 2))) + (Biomes.biomes.Length / 2)];
-    }
+    public Biome GetBiome(float x, float y) { return Biomes.biomes[Mathf.FloorToInt((GetNoise(2, Mathf.RoundToInt(x), Mathf.RoundToInt(y)) * (Biomes.biomes.Length / 2))) + (Biomes.biomes.Length / 2)]; }
 
     public float GetYLevel(float x, float y)
     {
