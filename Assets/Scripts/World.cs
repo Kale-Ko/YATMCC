@@ -12,7 +12,13 @@ public class World : MonoBehaviour
     public bool titleScreen = false;
     public int seed = 0;
 
+    int smoothing = 2;
+
     Dictionary<Vector2, Chunk> chunks = new Dictionary<Vector2, Chunk>();
+
+    Dictionary<Vector2, Texture2D> noiseData = new Dictionary<Vector2, Texture2D>();
+    Dictionary<Vector2, Texture2D> noiseData2 = new Dictionary<Vector2, Texture2D>();
+    Dictionary<Vector2, Texture2D> biomeNoiseData = new Dictionary<Vector2, Texture2D>();
 
     Noise noise;
     Noise noise2;
@@ -111,15 +117,71 @@ public class World : MonoBehaviour
         }
     }
 
+    public void GenereateNoise(float x, float y)
+    {
+        noiseData.Add(new Vector2(x, y), new Texture2D(16, 16, TextureFormat.Alpha8, false));
+        noiseData2.Add(new Vector2(x, y), new Texture2D(16, 16, TextureFormat.Alpha8, false));
+        biomeNoiseData.Add(new Vector2(x, y), new Texture2D(16, 16, TextureFormat.Alpha8, false));
+
+        for (var blockx = x * 16; blockx < (x + 1) * 16; blockx += smoothing)
+        {
+            for (var blocky = y * 16; blocky < (y + 1) * 16; blocky += smoothing)
+            {
+                noiseData[new Vector2(x, y)].SetPixel(Mathf.RoundToInt(blockx), Mathf.RoundToInt(blocky), new Color(0, 0, 0, noise.GetNoise(blockx, blocky)));
+                noiseData2[new Vector2(x, y)].SetPixel(Mathf.RoundToInt(blockx), Mathf.RoundToInt(blocky), new Color(0, 0, 0, noise2.GetNoise(blockx, blocky)));
+                biomeNoiseData[new Vector2(x, y)].SetPixel(Mathf.RoundToInt(blockx), Mathf.RoundToInt(blocky), new Color(0, 0, 0, biomeNoise.GetNoise(blockx, blocky)));
+            }
+        }
+    }
+
+    public float GetNoise(int layer, float x, float y)
+    {
+        if (!noiseData.ContainsKey(new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16)))) GenereateNoise(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16));
+
+        if (layer == 0) return noiseData[new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16))].GetPixel(Mathf.RoundToInt(x), Mathf.RoundToInt(y)).a;
+        else if (layer == 1) return noiseData2[new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16))].GetPixel(Mathf.RoundToInt(x), Mathf.RoundToInt(y)).a;
+        else if (layer == 2) return biomeNoiseData[new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16))].GetPixel(Mathf.RoundToInt(x), Mathf.RoundToInt(y)).a;
+        else return 0;
+    }
+
+    public Biome GetBiome(float x, float y)
+    {
+        return Biomes.biomes[Mathf.FloorToInt((GetNoise(2, Mathf.RoundToInt(x), Mathf.RoundToInt(y)) * (Biomes.biomes.Length / 2))) + (Biomes.biomes.Length / 2)];
+    }
+
+    public float GetYLevel(float x, float y)
+    {
+        int amount = 0;
+        float total = 0;
+
+        for (float blockx = x - smoothing; blockx < x + 1 + smoothing; blockx++)
+        {
+            for (float blocky = y - smoothing; blocky < y + 1 + smoothing; blocky++)
+            {
+                amount++;
+                total += GetRawYLevel(blockx, blocky);
+            }
+        }
+
+        return Mathf.Round(total / amount);
+    }
+
+    public float GetRawYLevel(float x, float y)
+    {
+        Biome biome = GetBiome(x, y);
+
+        return Mathf.Round(biome.height + ((GetNoise(0, x, y) * biome.scale) * (GetNoise(1, x, y) * biome.scale2)));
+    }
+
     public void GenerateChunk(float x, float y)
     {
         for (var blockx = x * 16; blockx < (x + 1) * 16; blockx++)
         {
             for (var blocky = y * 16; blocky < (y + 1) * 16; blocky++)
             {
-                Biome biome = Biomes.GetBiome(Mathf.FloorToInt((biomeNoise.GetNoise(Mathf.RoundToInt(blockx), Mathf.RoundToInt(blocky)) * (Biomes.biomes.Length / 2))) + (Biomes.biomes.Length / 2));
+                Biome biome = GetBiome(blockx, blocky);
 
-                float ylevel = Mathf.Round(biome.height + ((noise.GetNoise(blockx, blocky) * biome.scale) * (noise2.GetNoise(blockx, blocky) * biome.scale2)));
+                float ylevel = GetYLevel(blockx, blocky);
 
                 SetBlock(new Vector3(blockx, ylevel, blocky), biome.topblock);
                 for (var newy = ylevel - 1; newy > ylevel - 5; newy--) SetBlock(new Vector3(blockx, newy, blocky), biome.middleblock);
@@ -135,7 +197,7 @@ public class World : MonoBehaviour
                     int height = Mathf.RoundToInt(ylevel) + biome.tree.height + Mathf.RoundToInt(Random.Range(-biome.tree.variation, biome.tree.variation));
                     for (var newy = ylevel; newy < height; newy++) SetBlock(new Vector3(blockx, newy, blocky), biome.tree.trunk);
 
-                    if (biome.tree.leaves == Blocks.Air) return;
+                    if (biome.tree.leaves == Blocks.Air) continue;
 
                     for (var newx = -2; newx <= 2; newx++)
                     {
