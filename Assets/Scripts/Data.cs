@@ -133,6 +133,4 @@ public class Biomes
     public static Biome Ocean = new Biome(40, 4, 4, Blocks.Gravel, Blocks.Stone, Blocks.Stone, Trees.None, 0);
 
     public static Biome[] biomes = { Plains, Forest, Swamp, Desert, Mountains, Ocean };
-
-    public static Biome GetBiome(int id) { return biomes[id]; }
 }

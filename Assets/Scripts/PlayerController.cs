@@ -94,28 +94,34 @@ public class PlayerController : MonoBehaviour
             selectionBox.transform.GetComponent<MeshRenderer>().enabled = true;
             selectionBox.transform.position = new Vector3(Mathf.Floor(position.x) + 0.5f, Mathf.Floor(position.y) + 0.5f, Mathf.Floor(position.z) + 0.5f);
 
-            if (Input.GetMouseButtonDown(0))
+            if (Mathf.Floor(position.y) != 0)
             {
-                World.Instance.RemoveBlock(new Vector3(Mathf.Floor(position.x), Mathf.Floor(position.y), Mathf.Floor(position.z)));
+                if (Input.GetMouseButtonDown(0))
+                {
+                    World.Instance.RemoveBlock(new Vector3(Mathf.Floor(position.x), Mathf.Floor(position.y), Mathf.Floor(position.z)));
 
-                GameObject.Find("Chunk " + chunkx + ", " + chunky).GetComponent<Chunk>().Render();
-                if (localposition.x == 0) GameObject.Find("Chunk " + (chunkx - 1) + ", " + chunky).GetComponent<Chunk>().Render();
-                if (localposition.x == 15 || localposition.x == 16) GameObject.Find("Chunk " + (chunkx + 1) + ", " + chunky).GetComponent<Chunk>().Render();
-                if (localposition.z == 0) GameObject.Find("Chunk " + chunkx + ", " + (chunky - 1)).GetComponent<Chunk>().Render();
-                if (localposition.z == 15 || localposition.z == 16) GameObject.Find("Chunk " + chunkx + ", " + (chunky + 1)).GetComponent<Chunk>().Render();
-            }
-            else if (Input.GetMouseButtonDown(1))
-            {
-                position -= (hit.normal * -0.5f);
-                position += (hit.normal * 0.5f);
+                    GameObject.Find("Chunk " + chunkx + ", " + chunky).GetComponent<Chunk>().Render();
+                    if (localposition.x == 0) GameObject.Find("Chunk " + (chunkx - 1) + ", " + chunky).GetComponent<Chunk>().Render();
+                    if (localposition.x == 15 || localposition.x == 16) GameObject.Find("Chunk " + (chunkx + 1) + ", " + chunky).GetComponent<Chunk>().Render();
+                    if (localposition.z == 0) GameObject.Find("Chunk " + chunkx + ", " + (chunky - 1)).GetComponent<Chunk>().Render();
+                    if (localposition.z == 15 || localposition.z == 16) GameObject.Find("Chunk " + chunkx + ", " + (chunky + 1)).GetComponent<Chunk>().Render();
+                }
+                else if (Input.GetMouseButtonDown(1))
+                {
+                    position -= (hit.normal * -0.5f);
+                    position += (hit.normal * 0.5f);
 
-                World.Instance.SetBlock(new Vector3(Mathf.Floor(position.x), Mathf.Floor(position.y), Mathf.Floor(position.z)), Blocks.Dirt);
+                    if (new Vector3(Mathf.Floor(position.x), Mathf.Floor(position.y), Mathf.Floor(position.z)) != new Vector3(Mathf.Floor(transform.position.x), Mathf.Floor(transform.position.y), Mathf.Floor(transform.position.z)) && new Vector3(Mathf.Floor(position.x), Mathf.Floor(position.y), Mathf.Floor(position.z)) != new Vector3(Mathf.Floor(transform.position.x), Mathf.Floor(transform.position.y + 1f), Mathf.Floor(transform.position.z)))
+                    {
+                        World.Instance.SetBlock(new Vector3(Mathf.Floor(position.x), Mathf.Floor(position.y), Mathf.Floor(position.z)), Blocks.Dirt);
 
-                GameObject.Find("Chunk " + chunkx + ", " + chunky).GetComponent<Chunk>().Render();
-                if (localposition.x == 0) GameObject.Find("Chunk " + (chunkx - 1) + ", " + chunky).GetComponent<Chunk>().Render();
-                if (localposition.x == 15 || localposition.x == 16) GameObject.Find("Chunk " + (chunkx + 1) + ", " + chunky).GetComponent<Chunk>().Render();
-                if (localposition.z == 0) GameObject.Find("Chunk " + chunkx + ", " + (chunky - 1)).GetComponent<Chunk>().Render();
-                if (localposition.z == 15 || localposition.z == 16) GameObject.Find("Chunk " + chunkx + ", " + (chunky + 1)).GetComponent<Chunk>().Render();
+                        GameObject.Find("Chunk " + chunkx + ", " + chunky).GetComponent<Chunk>().Render();
+                        if (localposition.x == 0) GameObject.Find("Chunk " + (chunkx - 1) + ", " + chunky).GetComponent<Chunk>().Render();
+                        if (localposition.x == 15 || localposition.x == 16) GameObject.Find("Chunk " + (chunkx + 1) + ", " + chunky).GetComponent<Chunk>().Render();
+                        if (localposition.z == 0) GameObject.Find("Chunk " + chunkx + ", " + (chunky - 1)).GetComponent<Chunk>().Render();
+                        if (localposition.z == 15 || localposition.z == 16) GameObject.Find("Chunk " + chunkx + ", " + (chunky + 1)).GetComponent<Chunk>().Render();
+                    }
+                }
             }
         }
         else selectionBox.transform.GetComponent<MeshRenderer>().enabled = false;

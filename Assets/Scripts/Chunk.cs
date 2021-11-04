@@ -23,6 +23,9 @@ public class Chunk : MonoBehaviour
         List<int> watertriangles = new List<int>();
         List<Vector2> wateruvs = new List<Vector2>();
 
+        landmesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+        watermesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+
         foreach (var block in blocks)
         {
             Vector3 blockpos = block.Key;
