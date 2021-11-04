@@ -12,7 +12,7 @@ public class World : MonoBehaviour
     public bool titleScreen = false;
     public int seed = 0;
 
-    int smoothing = 2;
+    public int smoothing = 2;
 
     Dictionary<Vector2, Chunk> chunks = new Dictionary<Vector2, Chunk>();
 
@@ -119,33 +119,43 @@ public class World : MonoBehaviour
 
     public void GenereateNoise(float x, float y)
     {
-        noiseData.Add(new Vector2(x, y), new Texture2D(16, 16, TextureFormat.Alpha8, false));
-        noiseData2.Add(new Vector2(x, y), new Texture2D(16, 16, TextureFormat.Alpha8, false));
-        biomeNoiseData.Add(new Vector2(x, y), new Texture2D(16, 16, TextureFormat.Alpha8, false));
+        noiseData.Add(new Vector2(x, y), new Texture2D(16, 16, TextureFormat.RGB24, false));
+        noiseData2.Add(new Vector2(x, y), new Texture2D(16, 16, TextureFormat.RGB24, false));
+        biomeNoiseData.Add(new Vector2(x, y), new Texture2D(16, 16, TextureFormat.RGB24, false));
 
-        for (var blockx = x * 16; blockx < (x + 1) * 16; blockx += smoothing)
+        for (var blockx = 0; blockx < 16; blockx++)
         {
-            for (var blocky = y * 16; blocky < (y + 1) * 16; blocky += smoothing)
+            for (var blocky = 0; blocky < 16; blocky++)
             {
-                noiseData[new Vector2(x, y)].SetPixel(Mathf.RoundToInt(blockx), Mathf.RoundToInt(blocky), new Color(0, 0, 0, noise.GetNoise(blockx, blocky)));
-                noiseData2[new Vector2(x, y)].SetPixel(Mathf.RoundToInt(blockx), Mathf.RoundToInt(blocky), new Color(0, 0, 0, noise2.GetNoise(blockx, blocky)));
-                biomeNoiseData[new Vector2(x, y)].SetPixel(Mathf.RoundToInt(blockx), Mathf.RoundToInt(blocky), new Color(0, 0, 0, biomeNoise.GetNoise(blockx, blocky)));
+                float data1 = (noise.GetNoise(blockx + (x * 16), blocky + (y * 16))) + 1;
+                float data2 = (noise2.GetNoise(blockx + (x * 16), blocky + (y * 16))) + 1;
+                float data3 = (biomeNoise.GetNoise(blockx + (x * 16), blocky + (y * 16))) + 1;
+
+                noiseData[new Vector2(x, y)].SetPixel(Mathf.RoundToInt(blockx), Mathf.RoundToInt(blocky), new Color(data1, data1, data1));
+                noiseData2[new Vector2(x, y)].SetPixel(Mathf.RoundToInt(blockx), Mathf.RoundToInt(blocky), new Color(data2, data2, data2));
+                biomeNoiseData[new Vector2(x, y)].SetPixel(Mathf.RoundToInt(blockx), Mathf.RoundToInt(blocky), new Color(data3, data3, data3));
             }
         }
+
+        noiseData[new Vector2(x, y)].Apply();
+        noiseData2[new Vector2(x, y)].Apply();
+        biomeNoiseData[new Vector2(x, y)].Apply();
     }
 
     public float GetNoise(int layer, float x, float y)
     {
         if (!noiseData.ContainsKey(new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16)))) GenereateNoise(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16));
 
-        if (layer == 0) return noiseData[new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16))].GetPixel(Mathf.RoundToInt(x), Mathf.RoundToInt(y)).a;
-        else if (layer == 1) return noiseData2[new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16))].GetPixel(Mathf.RoundToInt(x), Mathf.RoundToInt(y)).a;
-        else if (layer == 2) return biomeNoiseData[new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16))].GetPixel(Mathf.RoundToInt(x), Mathf.RoundToInt(y)).a;
+        if (layer == 0) return (noiseData[new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16))].GetPixel(Mathf.RoundToInt(x), Mathf.RoundToInt(y)).grayscale) - 1;
+        else if (layer == 1) return (noiseData2[new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16))].GetPixel(Mathf.RoundToInt(x), Mathf.RoundToInt(y)).grayscale) - 1;
+        else if (layer == 2) return (biomeNoiseData[new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16))].GetPixel(Mathf.RoundToInt(x), Mathf.RoundToInt(y)).grayscale) - 1;
         else return 0;
     }
 
     public Biome GetBiome(float x, float y)
     {
+        Debug.Log((GetNoise(2, Mathf.RoundToInt(x), Mathf.RoundToInt(y))));
+
         return Biomes.biomes[Mathf.FloorToInt((GetNoise(2, Mathf.RoundToInt(x), Mathf.RoundToInt(y)) * (Biomes.biomes.Length / 2))) + (Biomes.biomes.Length / 2)];
     }
 
