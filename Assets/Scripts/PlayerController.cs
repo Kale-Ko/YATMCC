@@ -33,7 +33,7 @@ public class PlayerController : MonoBehaviour
     {
         if (Main.Instance.paused) return;
 
-        onGround = Physics.CheckSphere(transform.GetChild(1).transform.position, 0.2f, ground) && velocity.y < 0;
+        onGround = (Physics.CheckSphere(new Vector3(transform.GetChild(1).transform.position.x + 0.25f, transform.GetChild(1).transform.position.y, transform.GetChild(1).transform.position.z + 0.25f), 0.1f, ground) || Physics.CheckSphere(new Vector3(transform.GetChild(1).transform.position.x - 0.25f, transform.GetChild(1).transform.position.y, transform.GetChild(1).transform.position.z - 0.25f), 0.1f, ground) || Physics.CheckSphere(new Vector3(transform.GetChild(1).transform.position.x + 0.25f, transform.GetChild(1).transform.position.y, transform.GetChild(1).transform.position.z - 0.25f), 0.1f, ground) || Physics.CheckSphere(new Vector3(transform.GetChild(1).transform.position.x - 0.25f, transform.GetChild(1).transform.position.y, transform.GetChild(1).transform.position.z + 0.25f), 0.1f, ground)) && velocity.y < 0;
 
         if (onGround)
         {
@@ -81,7 +81,7 @@ public class PlayerController : MonoBehaviour
 
         RaycastHit hit;
 
-        if (Physics.Raycast(transform.GetChild(0).GetComponent<Camera>().transform.position, transform.GetChild(0).GetComponent<Camera>().transform.forward, out hit, 4f))
+        if (Physics.Raycast(transform.GetChild(0).GetComponent<Camera>().transform.position, transform.GetChild(0).GetComponent<Camera>().transform.forward, out hit, 4f, ground))
         {
             Vector3 position = hit.point;
             position += (hit.normal * -0.5f);
