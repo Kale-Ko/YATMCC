@@ -15,11 +15,7 @@ public class Sky : MonoBehaviour
 
     void Update()
     {
-        transform.position = (PlayerController.Instance != null ? PlayerController.Instance.transform.position : new Vector3(0, 0, 0));
 
-        transform.GetChild(0).rotation = Quaternion.Euler(((time / 24000) * 360) - 90, 0, 0);
-        transform.GetChild(1).rotation = Quaternion.Euler(((time / 24000) * 360) + 90, 0, 0);
-        transform.GetComponent<MeshRenderer>().material.mainTextureOffset = new Vector2(time / 24000, 0);
     }
 
     public void Tick()
