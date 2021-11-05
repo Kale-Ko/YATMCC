@@ -12,8 +12,6 @@ public class World : MonoBehaviour
     public bool titleScreen = false;
     public int seed = 0;
 
-    public int smoothing = 2;
-
     Dictionary<Vector2, Chunk> chunks = new Dictionary<Vector2, Chunk>();
 
     Dictionary<Vector2, Texture2D> noiseData = new Dictionary<Vector2, Texture2D>();
@@ -156,16 +154,33 @@ public class World : MonoBehaviour
 
     public float GetYLevel(float x, float y)
     {
+        Vector2[] sample = {
+            new Vector2(0, 0),
+
+            new Vector2(1, 0), new Vector2(0, 1), new Vector2(-1, 0), new Vector2(0, -1),
+            new Vector2(2, 0), new Vector2(0, 2), new Vector2(-2, 0), new Vector2(0, -2),
+            new Vector2(3, 0), new Vector2(0, 3), new Vector2(-3, 0), new Vector2(0, -3),
+            new Vector2(6, 0), new Vector2(0, 6), new Vector2(-6, 0), new Vector2(0, -6),
+            new Vector2(10, 0), new Vector2(0, 10), new Vector2(-10, 0), new Vector2(0, -10),
+            new Vector2(12, 0), new Vector2(0, 12), new Vector2(-12, 0), new Vector2(0, -12),
+            new Vector2(15, 0), new Vector2(0, 15), new Vector2(-15, 0), new Vector2(0, -15),
+
+            new Vector2(1, 1), new Vector2(-1, -1), new Vector2(1, -1), new Vector2(-1, 1),
+            new Vector2(2, 1), new Vector2(2, -1), new Vector2(-2, 1), new Vector2(-2, -1), new Vector2(1, 2), new Vector2(-1, 2), new Vector2(1, -2), new Vector2(-1, -2),
+            new Vector2(3, 3), new Vector2(-3, -3), new Vector2(3, -3), new Vector2(-3, 3),
+            new Vector2(6, 6), new Vector2(-6, -6), new Vector2(6, -6), new Vector2(-6, 6),
+            new Vector2(10, 10), new Vector2(-10, -10), new Vector2(10, -10), new Vector2(-10, 10),
+            new Vector2(12, 12), new Vector2(-12, -12), new Vector2(12, -12), new Vector2(-12, 12),
+            new Vector2(15, 15), new Vector2(-15, -15), new Vector2(15, -15), new Vector2(-15, 15)
+        };
+
         int amount = 0;
         float total = 0;
 
-        for (float blockx = x - smoothing; blockx < x + 1 + smoothing; blockx++)
+        foreach (var pos in sample)
         {
-            for (float blocky = y - smoothing; blocky < y + 1 + smoothing; blocky++)
-            {
-                amount++;
-                total += GetRawYLevel(blockx, blocky);
-            }
+            amount++;
+            total += GetRawYLevel(x + pos.x, y + pos.y);
         }
 
         return Mathf.Round(total / amount);
