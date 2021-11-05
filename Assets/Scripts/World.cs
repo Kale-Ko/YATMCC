@@ -15,12 +15,9 @@ public class World : MonoBehaviour
     Dictionary<Vector2, Chunk> chunks = new Dictionary<Vector2, Chunk>();
 
     Dictionary<Vector2, Texture2D> noiseData = new Dictionary<Vector2, Texture2D>();
-    Dictionary<Vector2, Texture2D> noiseData2 = new Dictionary<Vector2, Texture2D>();
     Dictionary<Vector2, Texture2D> biomeNoiseData = new Dictionary<Vector2, Texture2D>();
 
     Noise noise;
-    Noise noise2;
-
     Noise biomeNoise;
 
     void Start()
@@ -32,15 +29,11 @@ public class World : MonoBehaviour
         noise = new Noise(seed);
         noise.SetNoiseType(Noise.NoiseType.Perlin);
 
-        noise2 = new Noise(seed + 1);
-        noise2.SetNoiseType(Noise.NoiseType.Cellular);
-        noise2.SetFrequency(0.025f);
-
-        biomeNoise = new Noise(seed - 1);
+        biomeNoise = new Noise(seed + 1);
         biomeNoise.SetNoiseType(Noise.NoiseType.Cellular);
         biomeNoise.SetCellularDistanceFunction(Noise.CellularDistanceFunction.Hybrid);
         biomeNoise.SetCellularReturnType(Noise.CellularReturnType.CellValue);
-        biomeNoise.SetFrequency(0.015f);
+        biomeNoise.SetFrequency(0.01f);
 
         if (!titleScreen) InvokeRepeating("GenerateWorld", 0f, 0.1f);
 #if UNITY_EDITOR
@@ -118,25 +111,21 @@ public class World : MonoBehaviour
     public void GenereateNoise(float x, float y)
     {
         noiseData.Add(new Vector2(x, y), new Texture2D(16, 16, TextureFormat.RGB24, false));
-        noiseData2.Add(new Vector2(x, y), new Texture2D(16, 16, TextureFormat.RGB24, false));
         biomeNoiseData.Add(new Vector2(x, y), new Texture2D(16, 16, TextureFormat.RGB24, false));
 
         for (var blockx = 0; blockx < 16; blockx++)
         {
             for (var blocky = 0; blocky < 16; blocky++)
             {
-                float data1 = (noise.GetNoise(blockx + (x * 16), blocky + (y * 16))) + 1;
-                float data2 = (noise2.GetNoise(blockx + (x * 16), blocky + (y * 16))) + 1;
-                float data3 = (biomeNoise.GetNoise(blockx + (x * 16), blocky + (y * 16))) + 1;
+                float data = (noise.GetNoise(blockx + (x * 16), blocky + (y * 16))) + 1;
+                float biomeData = (biomeNoise.GetNoise(blockx + (x * 16), blocky + (y * 16))) + 1;
 
-                noiseData[new Vector2(x, y)].SetPixel(Mathf.RoundToInt(blockx), Mathf.RoundToInt(blocky), new Color(data1, data1, data1));
-                noiseData2[new Vector2(x, y)].SetPixel(Mathf.RoundToInt(blockx), Mathf.RoundToInt(blocky), new Color(data2, data2, data2));
-                biomeNoiseData[new Vector2(x, y)].SetPixel(Mathf.RoundToInt(blockx), Mathf.RoundToInt(blocky), new Color(data3, data3, data3));
+                noiseData[new Vector2(x, y)].SetPixel(Mathf.RoundToInt(blockx), Mathf.RoundToInt(blocky), new Color(data, data, data));
+                biomeNoiseData[new Vector2(x, y)].SetPixel(Mathf.RoundToInt(blockx), Mathf.RoundToInt(blocky), new Color(biomeData, biomeData, biomeData));
             }
         }
 
         noiseData[new Vector2(x, y)].Apply();
-        noiseData2[new Vector2(x, y)].Apply();
         biomeNoiseData[new Vector2(x, y)].Apply();
     }
 
@@ -145,12 +134,11 @@ public class World : MonoBehaviour
         if (!noiseData.ContainsKey(new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16)))) GenereateNoise(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16));
 
         if (layer == 0) return (noiseData[new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16))].GetPixel(Mathf.RoundToInt(x), Mathf.RoundToInt(y)).grayscale) - 1;
-        else if (layer == 1) return (noiseData2[new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16))].GetPixel(Mathf.RoundToInt(x), Mathf.RoundToInt(y)).grayscale) - 1;
-        else if (layer == 2) return (biomeNoiseData[new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16))].GetPixel(Mathf.RoundToInt(x), Mathf.RoundToInt(y)).grayscale) - 1;
+        else if (layer == 1) return (biomeNoiseData[new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16))].GetPixel(Mathf.RoundToInt(x), Mathf.RoundToInt(y)).grayscale) - 1;
         else return 0;
     }
 
-    public Biome GetBiome(float x, float y) { return Biomes.biomes[Mathf.FloorToInt((GetNoise(2, Mathf.RoundToInt(x), Mathf.RoundToInt(y)) * (Biomes.biomes.Length / 2))) + (Biomes.biomes.Length / 2)]; }
+    public Biome GetBiome(float x, float y) { return Biomes.biomes[Mathf.FloorToInt((GetNoise(1, Mathf.RoundToInt(x), Mathf.RoundToInt(y)) * (Biomes.biomes.Length / 2))) + (Biomes.biomes.Length / 2)]; }
 
     public float GetYLevel(float x, float y)
     {
@@ -190,7 +178,7 @@ public class World : MonoBehaviour
     {
         Biome biome = GetBiome(x, y);
 
-        return Mathf.Round(biome.height + ((GetNoise(0, x, y) * biome.scale) * (GetNoise(1, x, y) * biome.scale2)));
+        return Mathf.Round(biome.height + ((GetNoise(0, x, y) * biome.scale)));
     }
 
     public void GenerateChunk(float x, float y)
@@ -214,8 +202,8 @@ public class World : MonoBehaviour
 
                 if (ylevel > 64 && biome.tree != Trees.None && Random.Range(0, 32 - (biome.treeamount * 2)) == 0)
                 {
-                    int height = Mathf.RoundToInt(ylevel) + biome.tree.height + Mathf.RoundToInt(Random.Range(-biome.tree.variation, biome.tree.variation));
-                    for (var newy = ylevel; newy < height; newy++) SetBlock(new Vector3(blockx, newy, blocky), biome.tree.trunk);
+                    int height = Mathf.RoundToInt(ylevel + 1) + biome.tree.height + Mathf.RoundToInt(Random.Range(-biome.tree.variation, biome.tree.variation));
+                    for (var newy = ylevel + 1; newy < height; newy++) SetBlock(new Vector3(blockx, newy, blocky), biome.tree.trunk);
 
                     if (biome.tree.leaves == Blocks.Air) continue;
 
