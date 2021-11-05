@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Block
+public class BlockType
 {
     public string id;
 
@@ -13,11 +13,11 @@ public class Block
     public int bottomtexturex;
     public int bottomtexturey;
 
-    public Block(string id, int texturex, int texturey) : this(id, texturex, texturey, texturex, texturey, texturex, texturey) { }
+    public BlockType(string id, int texturex, int texturey) : this(id, texturex, texturey, texturex, texturey, texturex, texturey) { }
 
-    public Block(string id, int texturex, int texturey, int sidetexturex, int sidetexturey) : this(id, texturex, texturey, sidetexturex, sidetexturey, texturex, texturey) { }
+    public BlockType(string id, int texturex, int texturey, int sidetexturex, int sidetexturey) : this(id, texturex, texturey, sidetexturex, sidetexturey, texturex, texturey) { }
 
-    public Block(string id, int toptexturex, int toptexturey, int sidetexturex, int sidetexturey, int bottomtexturex, int bottomtexturey)
+    public BlockType(string id, int toptexturex, int toptexturey, int sidetexturex, int sidetexturey, int bottomtexturex, int bottomtexturey)
     {
         this.id = id;
 
@@ -32,22 +32,22 @@ public class Block
 
 public class Blocks
 {
-    public static Block Air = new Block("air", -1, -1);
-    public static Block Bedrock = new Block("bedrock", 0, 0);
-    public static Block Stone = new Block("stone", 1, 0);
-    public static Block Dirt = new Block("dirt", 2, 0);
-    public static Block Grass = new Block("grass", 3, 0, 4, 0, 2, 0);
-    public static Block Mud = new Block("mud", 5, 0);
-    public static Block Log = new Block("log", 7, 0, 6, 0);
-    public static Block Leaves = new Block("leaves", 8, 0);
-    public static Block Sand = new Block("sand", 9, 0);
-    public static Block Cactus = new Block("cactus", 11, 0, 10, 0);
-    public static Block Gravel = new Block("gravel", 12, 0);
-    public static Block Water = new Block("water", 13, 0);
+    public static BlockType Air = new BlockType("air", -1, -1);
+    public static BlockType Bedrock = new BlockType("bedrock", 0, 0);
+    public static BlockType Stone = new BlockType("stone", 1, 0);
+    public static BlockType Dirt = new BlockType("dirt", 2, 0);
+    public static BlockType Grass = new BlockType("grass", 3, 0, 4, 0, 2, 0);
+    public static BlockType Mud = new BlockType("mud", 5, 0);
+    public static BlockType Log = new BlockType("log", 7, 0, 6, 0);
+    public static BlockType Leaves = new BlockType("leaves", 8, 0);
+    public static BlockType Sand = new BlockType("sand", 9, 0);
+    public static BlockType Cactus = new BlockType("cactus", 11, 0, 10, 0);
+    public static BlockType Gravel = new BlockType("gravel", 12, 0);
+    public static BlockType Water = new BlockType("water", 13, 0);
 
-    public static Block[] blocks = { Air, Bedrock, Stone, Dirt, Grass, Log, Leaves, Sand, Gravel, Water };
+    public static BlockType[] blocks = { Air, Bedrock, Stone, Dirt, Grass, Log, Leaves, Sand, Gravel, Water };
 
-    public static Vector2[] GetUV(string side, Block block)
+    public static Vector2[] GetUV(string side, BlockType block)
     {
         int x = 1;
         int y = 0;
@@ -70,10 +70,10 @@ public class Tree
     public int height;
     public int variation;
 
-    public Block trunk;
-    public Block leaves;
+    public BlockType trunk;
+    public BlockType leaves;
 
-    public Tree(int height, int variation, Block trunk, Block leaves)
+    public Tree(int height, int variation, BlockType trunk, BlockType leaves)
     {
         this.height = height;
         this.variation = variation;
@@ -99,14 +99,14 @@ public class Biome
     public int scale;
     public int scale2;
 
-    public Block topblock;
-    public Block middleblock;
-    public Block bottomblock;
+    public BlockType topblock;
+    public BlockType middleblock;
+    public BlockType bottomblock;
 
     public Tree tree;
     public int treeamount;
 
-    public Biome(int height, int scale, int scale2, Block topblock, Block middleblock, Block bottomblock, Tree tree, int treeamount)
+    public Biome(int height, int scale, int scale2, BlockType topblock, BlockType middleblock, BlockType bottomblock, Tree tree, int treeamount)
     {
         this.height = height;
 
