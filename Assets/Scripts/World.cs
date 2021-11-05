@@ -17,6 +17,20 @@ public class World : MonoBehaviour
     Dictionary<Vector2, Texture2D> noiseData = new Dictionary<Vector2, Texture2D>();
     Dictionary<Vector2, Texture2D> biomeNoiseData = new Dictionary<Vector2, Texture2D>();
 
+    class Block
+    {
+        public Vector3 pos;
+        public BlockType block;
+
+        public Block(Vector3 pos, BlockType block)
+        {
+            this.pos = pos;
+            this.block = block;
+        }
+    }
+
+    List<Block> toGenerate = new List<Block>();
+
     Noise noise;
     Noise biomeNoise;
 
@@ -133,12 +147,15 @@ public class World : MonoBehaviour
     {
         if (!noiseData.ContainsKey(new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16)))) GenereateNoise(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16));
 
-        if (layer == 0) return (noiseData[new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16))].GetPixel(Mathf.RoundToInt(x), Mathf.RoundToInt(y)).grayscale) - 1;
-        else if (layer == 1) return (biomeNoiseData[new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16))].GetPixel(Mathf.RoundToInt(x), Mathf.RoundToInt(y)).grayscale) - 1;
+        if (layer == 0) return (noiseData[new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16))].GetPixel(Mathf.RoundToInt(x - (Mathf.FloorToInt(x / 16) * 16)), Mathf.RoundToInt(y - (Mathf.FloorToInt(y / 16) * 16))).grayscale) - 1;
+        else if (layer == 1) return (biomeNoiseData[new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16))].GetPixel(Mathf.RoundToInt(x - (Mathf.FloorToInt(x / 16) * 16)), Mathf.RoundToInt(y - (Mathf.FloorToInt(y / 16) * 16))).grayscale) - 1;
         else return 0;
     }
 
-    public Biome GetBiome(float x, float y) { return Biomes.biomes[Mathf.FloorToInt((GetNoise(1, Mathf.RoundToInt(x), Mathf.RoundToInt(y)) * (Biomes.biomes.Length / 2))) + (Biomes.biomes.Length / 2)]; }
+    public Biome GetBiome(float x, float y)
+    {
+        return Biomes.biomes[Mathf.FloorToInt((GetNoise(1, Mathf.RoundToInt(x), Mathf.RoundToInt(y)) * (Biomes.biomes.Length / 2)) + (Biomes.biomes.Length / 2))];
+    }
 
     public float GetYLevel(float x, float y)
     {
@@ -183,13 +200,22 @@ public class World : MonoBehaviour
 
     public void GenerateChunk(float x, float y)
     {
+        foreach (var block in toGenerate.ToArray())
+        {
+            if (InChunk(block.pos, new Vector2(x, y)))
+            {
+                SetBlock(block.pos, block.block);
+
+                toGenerate.Remove(block);
+            }
+        }
+
         for (var blockx = x * 16; blockx < (x + 1) * 16; blockx++)
         {
             for (var blocky = y * 16; blocky < (y + 1) * 16; blocky++)
             {
-                Biome biome = GetBiome(blockx, blocky);
-
                 float ylevel = GetYLevel(blockx, blocky);
+                Biome biome = GetBiome(blockx, blocky);
 
                 SetBlock(new Vector3(blockx, ylevel, blocky), biome.topblock);
                 for (var newy = ylevel - 1; newy > ylevel - 5; newy--) SetBlock(new Vector3(blockx, newy, blocky), biome.middleblock);
@@ -244,6 +270,14 @@ public class World : MonoBehaviour
         else return true;
     }
 
+    public bool InChunk(Vector3 pos, Vector2 chunk)
+    {
+        if (!ValidPos(pos)) return false;
+
+        if (chunks.ContainsKey(chunk)) return new Vector2(Mathf.FloorToInt(pos.x / 16), Mathf.FloorToInt(pos.z / 16)) == new Vector2(Mathf.FloorToInt(chunk.x), Mathf.FloorToInt(chunk.y));
+        else return false;
+    }
+
     public bool BlockExists(Vector3 pos)
     {
         if (!ValidPos(pos)) return false;
@@ -252,7 +286,7 @@ public class World : MonoBehaviour
         else return GetChunk(pos).blocks.ContainsKey(pos);
     }
 
-    public Block GetBlock(Vector3 pos)
+    public BlockType GetBlock(Vector3 pos)
     {
         if (!ValidPos(pos)) return null;
 
@@ -260,13 +294,14 @@ public class World : MonoBehaviour
         else return GetChunk(pos).blocks[pos];
     }
 
-    public void SetBlock(Vector3 pos, Block block)
+    public void SetBlock(Vector3 pos, BlockType block)
     {
         if (!ValidPos(pos)) return;
 
         if (BlockExists(pos)) RemoveBlock(pos);
 
         if (ChunkExists(pos)) GetChunk(pos).blocks.Add(pos, block);
+        else toGenerate.Add(new Block(pos, block));
     }
 
     public void RemoveBlock(Vector3 pos)
