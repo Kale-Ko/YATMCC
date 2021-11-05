@@ -6,7 +6,7 @@ public class Chunk : MonoBehaviour
     public float chunkx;
     public float chunky;
 
-    public Dictionary<Vector3, Block> blocks = new Dictionary<Vector3, Block>();
+    public Dictionary<Vector3, BlockType> blocks = new Dictionary<Vector3, BlockType>();
 
     public bool rendered = false;
 
