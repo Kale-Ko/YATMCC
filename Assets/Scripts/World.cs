@@ -47,7 +47,7 @@ public class World : MonoBehaviour
         biomeNoise.SetNoiseType(Noise.NoiseType.Cellular);
         biomeNoise.SetCellularDistanceFunction(Noise.CellularDistanceFunction.Hybrid);
         biomeNoise.SetCellularReturnType(Noise.CellularReturnType.CellValue);
-        biomeNoise.SetFrequency(0.01f);
+        biomeNoise.SetFrequency(0.02f);
 
         if (!titleScreen) InvokeRepeating("GenerateWorld", 0f, 0.1f);
 #if UNITY_EDITOR
@@ -154,7 +154,7 @@ public class World : MonoBehaviour
 
     public Biome GetBiome(float x, float y)
     {
-        return Biomes.biomes[Mathf.FloorToInt((GetNoise(1, Mathf.RoundToInt(x), Mathf.RoundToInt(y)) * (Biomes.biomes.Length / 2)) + (Biomes.biomes.Length / 2))];
+        return Biomes.biomes[Mathf.RoundToInt((GetNoise(1, Mathf.RoundToInt(x), Mathf.RoundToInt(y)) + 1) * (Biomes.biomes.Length - 1))];
     }
 
     public float GetYLevel(float x, float y)
