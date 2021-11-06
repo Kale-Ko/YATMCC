@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 0.15
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.19576949, g: 0.19576949, b: 0.19576949, a: 0.15}
+  m_IndirectSpecularColor: {r: 0.14072663, g: 0.2508125, b: 0.8484435, a: 0.15}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -884,7 +884,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chunkPrefab: {fileID: 5996309389191628120, guid: 94d4883e802b9c74fb024a316a4e5d47, type: 3}
   titleScreen: 1
-  seed: 0
+  seed: 3
 --- !u!4 &1353469199
 Transform:
   m_ObjectHideFlags: 0
