@@ -97,7 +97,6 @@ public class Biome
     public int height;
 
     public int scale;
-    public int scale2;
 
     public BlockType topblock;
     public BlockType middleblock;
@@ -106,12 +105,11 @@ public class Biome
     public Tree tree;
     public int treeamount;
 
-    public Biome(int height, int scale, int scale2, BlockType topblock, BlockType middleblock, BlockType bottomblock, Tree tree, int treeamount)
+    public Biome(int height, int scale, BlockType topblock, BlockType middleblock, BlockType bottomblock, Tree tree, int treeamount)
     {
         this.height = height;
 
         this.scale = scale;
-        this.scale2 = scale2;
 
         this.topblock = topblock;
         this.middleblock = middleblock;
@@ -124,13 +122,13 @@ public class Biome
 
 public class Biomes
 {
-    public static Biome Void = new Biome(0, 0, 0, Blocks.Air, Blocks.Air, Blocks.Air, Trees.None, 0);
-    public static Biome Plains = new Biome(70, 5, 1, Blocks.Grass, Blocks.Dirt, Blocks.Stone, Trees.None, 0);
-    public static Biome Forest = new Biome(76, 8, 3, Blocks.Grass, Blocks.Dirt, Blocks.Stone, Trees.Oak, 3);
-    public static Biome Swamp = new Biome(60, 4, 2, Blocks.Mud, Blocks.Dirt, Blocks.Stone, Trees.Oak, 1);
-    public static Biome Desert = new Biome(68, 5, 1, Blocks.Sand, Blocks.Sand, Blocks.Stone, Trees.Cactus, 2);
-    public static Biome Mountains = new Biome(86, 10, 8, Blocks.Stone, Blocks.Stone, Blocks.Stone, Trees.None, 0);
-    public static Biome Ocean = new Biome(40, 4, 4, Blocks.Gravel, Blocks.Stone, Blocks.Stone, Trees.None, 0);
+    public static Biome Void = new Biome(0, 0, Blocks.Air, Blocks.Air, Blocks.Air, Trees.None, 0);
+    public static Biome Plains = new Biome(70, 5, Blocks.Grass, Blocks.Dirt, Blocks.Stone, Trees.None, 0);
+    public static Biome Forest = new Biome(76, 8, Blocks.Grass, Blocks.Dirt, Blocks.Stone, Trees.Oak, 3);
+    public static Biome Swamp = new Biome(63, 2, Blocks.Mud, Blocks.Dirt, Blocks.Stone, Trees.Oak, 1);
+    public static Biome Desert = new Biome(68, 5, Blocks.Sand, Blocks.Sand, Blocks.Stone, Trees.Cactus, 1);
+    public static Biome Mountains = new Biome(86, 10, Blocks.Stone, Blocks.Stone, Blocks.Stone, Trees.None, 0);
+    public static Biome Ocean = new Biome(40, 4, Blocks.Gravel, Blocks.Stone, Blocks.Stone, Trees.None, 0);
 
     public static Biome[] biomes = { Plains, Forest, Swamp, Desert, Mountains, Ocean };
 }
