@@ -165,18 +165,20 @@ public class World : MonoBehaviour
             new Vector2(1, 0), new Vector2(0, 1), new Vector2(-1, 0), new Vector2(0, -1),
             new Vector2(2, 0), new Vector2(0, 2), new Vector2(-2, 0), new Vector2(0, -2),
             new Vector2(3, 0), new Vector2(0, 3), new Vector2(-3, 0), new Vector2(0, -3),
+            new Vector2(4, 0), new Vector2(0, 4), new Vector2(-4, 0), new Vector2(0, -4),
+            new Vector2(5, 0), new Vector2(0, 5), new Vector2(-5, 0), new Vector2(0, -5),
             new Vector2(6, 0), new Vector2(0, 6), new Vector2(-6, 0), new Vector2(0, -6),
             new Vector2(10, 0), new Vector2(0, 10), new Vector2(-10, 0), new Vector2(0, -10),
             new Vector2(12, 0), new Vector2(0, 12), new Vector2(-12, 0), new Vector2(0, -12),
-            new Vector2(15, 0), new Vector2(0, 15), new Vector2(-15, 0), new Vector2(0, -15),
 
             new Vector2(1, 1), new Vector2(-1, -1), new Vector2(1, -1), new Vector2(-1, 1),
             new Vector2(2, 1), new Vector2(2, -1), new Vector2(-2, 1), new Vector2(-2, -1), new Vector2(1, 2), new Vector2(-1, 2), new Vector2(1, -2), new Vector2(-1, -2),
             new Vector2(3, 3), new Vector2(-3, -3), new Vector2(3, -3), new Vector2(-3, 3),
-            new Vector2(6, 6), new Vector2(-6, -6), new Vector2(6, -6), new Vector2(-6, 6),
-            new Vector2(10, 10), new Vector2(-10, -10), new Vector2(10, -10), new Vector2(-10, 10),
-            new Vector2(12, 12), new Vector2(-12, -12), new Vector2(12, -12), new Vector2(-12, 12),
-            new Vector2(15, 15), new Vector2(-15, -15), new Vector2(15, -15), new Vector2(-15, 15)
+            new Vector2(4, 4), new Vector2(-4, -4), new Vector2(4, -4), new Vector2(-4, 4),
+            new Vector2(5, 5), new Vector2(-5, -5), new Vector2(5, -5), new Vector2(-5, 5), new Vector2(5, 2), new Vector2(5, -2), new Vector2(-5, 2), new Vector2(-5, -2), new Vector2(2, 5), new Vector2(-2, 5), new Vector2(2, -5), new Vector2(-2, -5),
+            new Vector2(6, 6), new Vector2(-6, -6), new Vector2(6, -6), new Vector2(-6, 6), new Vector2(6, 3), new Vector2(6, -3), new Vector2(-6, 3), new Vector2(-6, -3), new Vector2(3, 6), new Vector2(-3, 6), new Vector2(3, -6), new Vector2(-3, -6),
+            new Vector2(10, 10), new Vector2(-10, -10), new Vector2(10, -10), new Vector2(-10, 10), new Vector2(10, 5), new Vector2(10, -5), new Vector2(-10, 5), new Vector2(-10, -5),new Vector2(5, 10), new Vector2(-5, 10), new Vector2(5, -10), new Vector2(-5, -10),
+            new Vector2(12, 12), new Vector2(-12, -12), new Vector2(12, -12), new Vector2(-12, 12), new Vector2(12, 6), new Vector2(12, -6), new Vector2(-12, 6), new Vector2(-12, -6),new Vector2(6, 12), new Vector2(-6, 12), new Vector2(6, -12), new Vector2(-6, -12),
         };
 
         int amount = 0;
