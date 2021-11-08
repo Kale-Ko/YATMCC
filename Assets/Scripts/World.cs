@@ -61,28 +61,40 @@ public class World : MonoBehaviour
         {
             GenerateWorld();
 
-            List<CombineInstance> toCombine = new List<CombineInstance>();
+            List<CombineInstance> landCombine = new List<CombineInstance>();
+            List<CombineInstance> waterCombine = new List<CombineInstance>();
 
             foreach (Transform child in transform)
             {
                 if (!child.name.Contains("Chunk")) continue;
 
-                CombineInstance newCombine = new CombineInstance();
-                newCombine.mesh = child.GetComponent<MeshFilter>().mesh;
-                newCombine.transform = child.localToWorldMatrix;
+                CombineInstance newLandCombine = new CombineInstance();
+                newLandCombine.mesh = child.GetChild(0).GetComponent<MeshFilter>().mesh;
+                newLandCombine.transform = child.localToWorldMatrix;
 
-                toCombine.Add(newCombine);
+                CombineInstance newWaterCombine = new CombineInstance();
+                newWaterCombine.mesh = child.GetChild(1).GetComponent<MeshFilter>().mesh;
+                newWaterCombine.transform = child.localToWorldMatrix;
+
+                landCombine.Add(newLandCombine);
+                waterCombine.Add(newWaterCombine);
 
                 Destroy(child.gameObject);
             }
 
-            Mesh fullWorldMesh = new Mesh();
-            fullWorldMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
-            fullWorldMesh.CombineMeshes(toCombine.ToArray());
+            Mesh landMesh = new Mesh();
+            landMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+            landMesh.CombineMeshes(landCombine.ToArray());
 
-            transform.GetComponent<MeshFilter>().mesh = fullWorldMesh;
+            Mesh waterMesh = new Mesh();
+            waterMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+            waterMesh.CombineMeshes(waterCombine.ToArray());
 
-            AssetDatabase.CreateAsset(fullWorldMesh, "Assets/Assets/TitleMenuWorld.asset");
+            transform.GetChild(0).GetComponent<MeshFilter>().mesh = landMesh;
+            transform.GetChild(1).GetComponent<MeshFilter>().mesh = waterMesh;
+
+            AssetDatabase.CreateAsset(landMesh, "Assets/Assets/Title Menu/Land.asset");
+            AssetDatabase.CreateAsset(waterMesh, "Assets/Assets/Title Menu/Water.asset");
             AssetDatabase.SaveAssets();
         }
 #endif
@@ -96,7 +108,7 @@ public class World : MonoBehaviour
         {
             if (!child.name.Contains("Chunk")) continue;
 
-            if (child.GetComponent<Chunk>().chunkx < pos.x - Config.distance || child.GetComponent<Chunk>().chunkx > pos.x + Config.distance || child.GetComponent<Chunk>().chunky < pos.y - Config.distance || child.GetComponent<Chunk>().chunky > pos.y + Config.distance) child.GetComponent<MeshRenderer>().enabled = false;
+            if (child.GetComponent<Chunk>().chunkx < pos.x - Config.distance || child.GetComponent<Chunk>().chunkx > pos.x + Config.distance || child.GetComponent<Chunk>().chunky < pos.y - Config.distance || child.GetComponent<Chunk>().chunky > pos.y + Config.distance) child.GetComponent<Chunk>().Disable();
         }
 
         for (var x = pos.x - Config.distance; x < pos.x + 1 + Config.distance; x++)
@@ -110,7 +122,7 @@ public class World : MonoBehaviour
                 newchunk.transform.parent = transform;
                 newchunk.transform.GetComponent<Chunk>().chunkx = x;
                 newchunk.transform.GetComponent<Chunk>().chunky = y;
-                newchunk.transform.GetComponent<MeshRenderer>().enabled = false;
+                newchunk.transform.GetComponent<Chunk>().Disable();
 
                 chunks.Add(new Vector2(x, y), newchunk.GetComponent<Chunk>());
 
@@ -122,7 +134,7 @@ public class World : MonoBehaviour
         {
             for (var y = pos.y - Config.distance; y < pos.y + 1 + Config.distance; y++)
             {
-                if (chunks[new Vector2(x, y)].rendered) chunks[new Vector2(x, y)].GetComponent<MeshRenderer>().enabled = true;
+                if (chunks[new Vector2(x, y)].rendered) chunks[new Vector2(x, y)].Enable();
                 else chunks[new Vector2(x, y)].Render();
             }
         }
