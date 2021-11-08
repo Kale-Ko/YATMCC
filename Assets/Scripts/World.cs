@@ -23,6 +23,9 @@ public class World : MonoBehaviour
     Dictionary<Vector2, Texture2D> noiseData = new Dictionary<Vector2, Texture2D>();
     Dictionary<Vector2, Texture2D> biomeNoiseData = new Dictionary<Vector2, Texture2D>();
 
+    public Vector3 spawnPos = new Vector3(0, 0, 0);
+    public float spawnDistanceFromCenter = float.PositiveInfinity;
+
     class Block
     {
         public Vector3 pos;
@@ -55,7 +58,14 @@ public class World : MonoBehaviour
         biomeNoise.SetCellularReturnType(Noise.CellularReturnType.CellValue);
         biomeNoise.SetFrequency(0.02f);
 
-        if (!titleScreen) InvokeRepeating("GenerateWorld", 0f, 0.1f);
+        if (!titleScreen)
+        {
+            GenerateWorld();
+
+            PlayerController.Instance.Spawn(new Vector3(spawnPos.x + 0.5f, spawnPos.y + 0.5f, spawnPos.z + 0.5f));
+
+            InvokeRepeating("GenerateWorld", 0.1f, 0.1f);
+        }
 #if UNITY_EDITOR
         else
         {
@@ -265,6 +275,12 @@ public class World : MonoBehaviour
                         }
                     }
                 }
+
+                if (Vector2.Distance(new Vector2(blockx, blocky), new Vector2(8, 8)) < spawnDistanceFromCenter && SpawnablePos(new Vector3(blockx, ylevel + 1, blocky)))
+                {
+                    spawnDistanceFromCenter = Vector2.Distance(new Vector2(blockx, blocky), new Vector2(8, 8));
+                    spawnPos = new Vector3(blockx, ylevel + 1, blocky);
+                }
             }
         }
     }
@@ -342,5 +358,10 @@ public class World : MonoBehaviour
     {
         if (!BlockExists(pos)) return false;
         else return GetBlock(pos) == Blocks.Water;
+    }
+
+    public bool SpawnablePos(Vector3 pos)
+    {
+        return pos.y > 64 && !BlockExists(pos) && !BlockExists(new Vector3(pos.x, pos.y + 1, pos.z)) && IsBlock(new Vector3(pos.x, pos.y - 1, pos.z)) && IsBlock(new Vector3(pos.x, pos.y - 2, pos.z));
     }
 }
