@@ -23,6 +23,9 @@ public class PlayerController : MonoBehaviour
 
     bool onGround;
 
+    Vector3 spawnPos = new Vector3(0, 0, 0);
+    bool spawned = false;
+
     GameObject selectionBox;
 
     public void Start()
@@ -38,6 +41,19 @@ public class PlayerController : MonoBehaviour
     public void Update()
     {
         if (Main.Instance.paused) return;
+
+        transform.GetComponent<CharacterController>().enabled = true;
+
+        if (spawnPos != new Vector3(0, 0, 0) && !spawned)
+        {
+            transform.GetComponent<CharacterController>().enabled = false;
+
+            transform.position = spawnPos;
+            spawned = true;
+            spawnPos = new Vector3(0, 0, 0);
+
+            return;
+        }
 
         onGround = (Physics.CheckSphere(new Vector3(transform.GetChild(1).transform.position.x + 0.25f, transform.GetChild(1).transform.position.y, transform.GetChild(1).transform.position.z + 0.25f), 0.1f, ground) || Physics.CheckSphere(new Vector3(transform.GetChild(1).transform.position.x - 0.25f, transform.GetChild(1).transform.position.y, transform.GetChild(1).transform.position.z - 0.25f), 0.1f, ground) || Physics.CheckSphere(new Vector3(transform.GetChild(1).transform.position.x + 0.25f, transform.GetChild(1).transform.position.y, transform.GetChild(1).transform.position.z - 0.25f), 0.1f, ground) || Physics.CheckSphere(new Vector3(transform.GetChild(1).transform.position.x - 0.25f, transform.GetChild(1).transform.position.y, transform.GetChild(1).transform.position.z + 0.25f), 0.1f, ground)) && velocity.y < 0;
 
@@ -131,5 +147,11 @@ public class PlayerController : MonoBehaviour
             }
         }
         else selectionBox.transform.GetComponent<MeshRenderer>().enabled = false;
+    }
+
+    public void Spawn(Vector3 pos)
+    {
+        spawnPos = pos;
+        spawned = false;
     }
 }
