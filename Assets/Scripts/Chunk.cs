@@ -127,6 +127,14 @@ public class Chunk : MonoBehaviour
                         numFaces++;
 
                         wateruvs.AddRange(Blocks.GetUV("top", World.Instance.GetBlock(blockpos)));
+
+                        watervertices.Add(blockpos + new Vector3(0, 0.875f, 0));
+                        watervertices.Add(blockpos + new Vector3(1, 0.875f, 0));
+                        watervertices.Add(blockpos + new Vector3(1, 0.875f, 1));
+                        watervertices.Add(blockpos + new Vector3(0, 0.875f, 1));
+                        numFaces++;
+
+                        wateruvs.AddRange(Blocks.GetUV("top", World.Instance.GetBlock(blockpos)));
                     }
 
                     if (blockpos.y == 0 || !World.Instance.IsWater(new Vector3(blockpos.x, blockpos.y - 1, blockpos.z)))
@@ -265,33 +273,38 @@ public class Chunk : MonoBehaviour
         landmesh.vertices = landvertices.ToArray();
         landmesh.triangles = landtriangles.ToArray();
         landmesh.uv = landuvs.ToArray();
+        landmesh.RecalculateNormals();
 
         watermesh.name = "Water " + chunkx + " " + chunky;
         watermesh.vertices = watervertices.ToArray();
         watermesh.triangles = watertriangles.ToArray();
         watermesh.uv = wateruvs.ToArray();
+        watermesh.RecalculateNormals();
 
-        CombineInstance[] combinemeshes = new CombineInstance[2];
-        combinemeshes[0].mesh = landmesh;
-        combinemeshes[0].transform = transform.localToWorldMatrix;
-        combinemeshes[1].mesh = watermesh;
-        combinemeshes[1].transform = transform.localToWorldMatrix;
-
-        Mesh fullmesh = new Mesh();
-        fullmesh.name = "Chunk " + chunkx + " " + chunky;
-        fullmesh.CombineMeshes(combinemeshes);
-        fullmesh.RecalculateNormals();
-
-        return new Mesh[] { fullmesh, landmesh, watermesh };
+        return new Mesh[] { landmesh, watermesh };
     }
 
     public void Render()
     {
         Mesh[] meshes = GenerateMeshes();
 
-        transform.GetComponent<MeshFilter>().mesh = meshes[0];
-        transform.GetComponent<MeshCollider>().sharedMesh = meshes[1];
+        transform.GetChild(0).GetComponent<MeshFilter>().mesh = meshes[0];
+        transform.GetChild(0).GetComponent<MeshCollider>().sharedMesh = meshes[0];
+
+        transform.GetChild(1).GetComponent<MeshFilter>().mesh = meshes[1];
 
         rendered = true;
+    }
+
+    public void Enable()
+    {
+        transform.GetChild(0).GetComponent<MeshRenderer>().enabled = true;
+        transform.GetChild(1).GetComponent<MeshRenderer>().enabled = true;
+    }
+
+    public void Disable()
+    {
+        transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false;
+        transform.GetChild(1).GetComponent<MeshRenderer>().enabled = false;
     }
 }
