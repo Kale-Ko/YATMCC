@@ -112,7 +112,7 @@ public class World : MonoBehaviour
 
     public void GenerateWorld()
     {
-        Vector2 pos = (PlayerController.Instance != null ? new Vector2(Mathf.FloorToInt(PlayerController.Instance.transform.position.x / 16), Mathf.FloorToInt(PlayerController.Instance.transform.position.z / 16)) : new Vector2(0, 0));
+        Vector2 pos = (PlayerController.Instance != null ? new Vector2(PlayerController.Instance.transform.position.x % 16, PlayerController.Instance.transform.position.z % 16) : new Vector2(0, 0));
 
         foreach (Transform child in transform)
         {
@@ -173,10 +173,10 @@ public class World : MonoBehaviour
 
     public float GetNoise(int layer, float x, float y)
     {
-        if (!noiseData.ContainsKey(new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16)))) GenereateNoise(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16));
+        if (!noiseData.ContainsKey(new Vector2(x % 16, y % 16))) GenereateNoise(x % 16, y % 16);
 
-        if (layer == 0) return (noiseData[new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16))].GetPixel(Mathf.RoundToInt(x - (Mathf.FloorToInt(x / 16) * 16)), Mathf.RoundToInt(y - (Mathf.FloorToInt(y / 16) * 16))).grayscale) - 1;
-        else if (layer == 1) return (biomeNoiseData[new Vector2(Mathf.FloorToInt(x / 16), Mathf.FloorToInt(y / 16))].GetPixel(Mathf.RoundToInt(x - (Mathf.FloorToInt(x / 16) * 16)), Mathf.RoundToInt(y - (Mathf.FloorToInt(y / 16) * 16))).grayscale) - 1;
+        if (layer == 0) return (noiseData[new Vector2(x % 16, y % 16)].GetPixel(Mathf.RoundToInt(x - (x % 16 * 16)), Mathf.RoundToInt(y - (y % 16 * 16))).grayscale) - 1;
+        else if (layer == 1) return (biomeNoiseData[new Vector2(x % 16, y % 16)].GetPixel(Mathf.RoundToInt(x - (x % 16 * 16)), Mathf.RoundToInt(y - (y % 16 * 16))).grayscale) - 1;
         else return 0;
     }
 
@@ -289,7 +289,7 @@ public class World : MonoBehaviour
     {
         if (!ValidPos(pos)) return false;
 
-        return chunks.ContainsKey(new Vector2(Mathf.Floor(pos.x / 16), Mathf.Floor(pos.z / 16)));
+        return chunks.ContainsKey(new Vector2(pos.x % 16, pos.z % 16));
     }
 
     public Chunk GetChunk(Vector3 pos)
@@ -297,7 +297,7 @@ public class World : MonoBehaviour
         if (!ValidPos(pos)) return null;
 
         if (!ChunkExists(pos)) return null;
-        else return chunks[new Vector2(Mathf.Floor(pos.x / 16), Mathf.Floor(pos.z / 16))];
+        else return chunks[new Vector2(pos.x % 16, pos.z % 16)];
     }
 
     public bool ValidPos(Vector3 pos)
@@ -310,7 +310,7 @@ public class World : MonoBehaviour
     {
         if (!ValidPos(pos)) return false;
 
-        if (chunks.ContainsKey(chunk)) return new Vector2(Mathf.FloorToInt(pos.x / 16), Mathf.FloorToInt(pos.z / 16)) == new Vector2(Mathf.FloorToInt(chunk.x), Mathf.FloorToInt(chunk.y));
+        if (chunks.ContainsKey(chunk)) return new Vector2(pos.x % 16, pos.z % 16) == new Vector2(Mathf.FloorToInt(chunk.x), Mathf.FloorToInt(chunk.y));
         else return false;
     }
 
