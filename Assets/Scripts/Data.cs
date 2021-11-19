@@ -53,7 +53,7 @@ public class Blocks
 
     public static BlockType[] blocks = { Air, Bedrock, Stone, Dirt, Grass, Log, Leaves, Sand, Gravel, Water };
 
-    public static Vector2[] GetUV(string side, BlockType block)
+    public static Vector3[] GetUV(string side, BlockType block)
     {
         int x = 1;
         int y = 0;
@@ -62,11 +62,11 @@ public class Blocks
         else if (side == "bottom") { x = block.bottomtexturex; y = block.bottomtexturey; }
         else if (side == "side") { x = block.sidetexturex; y = block.sidetexturey; }
 
-        return new Vector2[] {
-            new Vector2(x / 16f + .001f, y / 16f + .001f),
-            new Vector2(x / 16f + .001f, (y + 1) / 16f - .001f),
-            new Vector2((x + 1) / 16f - .001f, (y + 1) / 16f - .001f),
-            new Vector2((x + 1) / 16f - .001f, y / 16f + .001f)
+        return new Vector3[] {
+            new Vector3(x / 16f + .001f, y / 16f + .001f, 0),
+            new Vector3(x / 16f + .001f, (y + 1) / 16f - .001f, 0),
+            new Vector3((x + 1) / 16f - .001f, (y + 1) / 16f - .001f, 0),
+            new Vector3((x + 1) / 16f - .001f, y / 16f + .001f, 0)
         };
     }
 }

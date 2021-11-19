@@ -6,6 +6,7 @@
 
 using System.Collections.Generic;
 using UnityEngine;
+using System.Threading;
 
 public class Chunk : MonoBehaviour
 {
@@ -16,21 +17,15 @@ public class Chunk : MonoBehaviour
 
     public bool rendered = false;
 
-    Mesh[] GenerateMeshes()
+    List<Vector3>[] GenerateMeshes()
     {
-        Mesh landmesh = new Mesh();
-        Mesh watermesh = new Mesh();
-
         List<Vector3> landvertices = new List<Vector3>();
-        List<int> landtriangles = new List<int>();
-        List<Vector2> landuvs = new List<Vector2>();
+        List<Vector3> landtriangles = new List<Vector3>();
+        List<Vector3> landuvs = new List<Vector3>();
 
         List<Vector3> watervertices = new List<Vector3>();
-        List<int> watertriangles = new List<int>();
-        List<Vector2> wateruvs = new List<Vector2>();
-
-        landmesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
-        watermesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+        List<Vector3> watertriangles = new List<Vector3>();
+        List<Vector3> wateruvs = new List<Vector3>();
 
         foreach (var block in blocks)
         {
@@ -109,7 +104,7 @@ public class Chunk : MonoBehaviour
                 int tl = landvertices.Count - 4 * numFaces;
                 for (int i = 0; i < numFaces; i++)
                 {
-                    landtriangles.AddRange(new int[] { tl + i * 4, tl + i * 4 + 1, tl + i * 4 + 2, tl + i * 4, tl + i * 4 + 2, tl + i * 4 + 3 });
+                    landtriangles.AddRange(new Vector3[] { new Vector3(tl + i * 4, 0, 0), new Vector3(tl + i * 4 + 1, 0, 0), new Vector3(tl + i * 4 + 2, 0, 0), new Vector3(tl + i * 4, 0, 0), new Vector3(tl + i * 4 + 2, 0, 0), new Vector3(tl + i * 4 + 3, 0, 0) });
                 }
             }
             else if (World.Instance.IsWater(blockpos))
@@ -264,34 +259,76 @@ public class Chunk : MonoBehaviour
                 int tl = watervertices.Count - 4 * numFaces;
                 for (int i = 0; i < numFaces; i++)
                 {
-                    watertriangles.AddRange(new int[] { tl + i * 4, tl + i * 4 + 1, tl + i * 4 + 2, tl + i * 4, tl + i * 4 + 2, tl + i * 4 + 3 });
+                    watertriangles.AddRange(new Vector3[] { new Vector3(tl + i * 4, 0, 0), new Vector3(tl + i * 4 + 1, 0, 0), new Vector3(tl + i * 4 + 2, 0, 0), new Vector3(tl + i * 4, 0, 0), new Vector3(tl + i * 4 + 2, 0, 0), new Vector3(tl + i * 4 + 3, 0, 0) });
                 }
             }
         }
 
+        return new List<Vector3>[] { landvertices, landtriangles, landuvs, watervertices, watertriangles, wateruvs };
+    }
+
+    public void Render()
+    {
+        if (rendered) return;
+
+        List<Vector3>[] data = null;
+        Thread renderingThread = new Thread(new ThreadStart(() =>
+        {
+            data = GenerateMeshes();
+        }));
+        renderingThread.Name = "rendering";
+        renderingThread.IsBackground = true;
+        renderingThread.Start();
+        renderingThread.Join();
+
+        Mesh landmesh = new Mesh();
+        Mesh watermesh = new Mesh();
+
+        landmesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+        watermesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+
+        List<int> landtriangles = new List<int>();
+        List<int> watertriangles = new List<int>();
+
+        List<Vector2> landuvs = new List<Vector2>();
+        List<Vector2> wateruvs = new List<Vector2>();
+
+        for (var index = 0; index < data[1].Count; index++)
+        {
+            landtriangles.Add(Mathf.RoundToInt(data[1][index].x));
+        }
+
+        for (var index = 0; index < data[4].Count; index++)
+        {
+            watertriangles.Add(Mathf.RoundToInt(data[4][index].x));
+        }
+
+        for (var index = 0; index < data[2].Count; index++)
+        {
+            landuvs.Add(new Vector2(data[2][index].x, data[2][index].y));
+        }
+
+        for (var index = 0; index < data[5].Count; index++)
+        {
+            wateruvs.Add(new Vector2(data[5][index].x, data[5][index].y));
+        }
+
         landmesh.name = "Land " + chunkx + " " + chunky;
-        landmesh.vertices = landvertices.ToArray();
+        landmesh.vertices = data[0].ToArray();
         landmesh.triangles = landtriangles.ToArray();
         landmesh.uv = landuvs.ToArray();
         landmesh.RecalculateNormals();
 
         watermesh.name = "Water " + chunkx + " " + chunky;
-        watermesh.vertices = watervertices.ToArray();
+        watermesh.vertices = data[3].ToArray();
         watermesh.triangles = watertriangles.ToArray();
         watermesh.uv = wateruvs.ToArray();
         watermesh.RecalculateNormals();
 
-        return new Mesh[] { landmesh, watermesh };
-    }
+        transform.GetChild(0).GetComponent<MeshFilter>().mesh = landmesh;
+        transform.GetChild(0).GetComponent<MeshCollider>().sharedMesh = landmesh;
 
-    public void Render()
-    {
-        Mesh[] meshes = GenerateMeshes();
-
-        transform.GetChild(0).GetComponent<MeshFilter>().mesh = meshes[0];
-        transform.GetChild(0).GetComponent<MeshCollider>().sharedMesh = meshes[0];
-
-        transform.GetChild(1).GetComponent<MeshFilter>().mesh = meshes[1];
+        transform.GetChild(1).GetComponent<MeshFilter>().mesh = watermesh;
 
         rendered = true;
     }
