@@ -269,8 +269,6 @@ public class Chunk : MonoBehaviour
 
     public void Render()
     {
-        if (rendered) return;
-
         List<Vector3>[] data = null;
         Thread renderingThread = new Thread(new ThreadStart(() =>
         {
