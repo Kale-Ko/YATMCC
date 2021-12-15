@@ -16,6 +16,7 @@ public class World : MonoBehaviour
     public GameObject chunkPrefab;
 
     public bool titleScreen = false;
+    public int titleScreenSize = 3;
     public int seed = 0;
 
     Dictionary<Vector2, Chunk> chunks = new Dictionary<Vector2, Chunk>();
@@ -71,6 +72,8 @@ public class World : MonoBehaviour
 #if UNITY_EDITOR
         else
         {
+            Config.distance = titleScreenSize;
+
             GenerateWorld();
 
             List<CombineInstance> landCombine = new List<CombineInstance>();
@@ -95,15 +98,14 @@ public class World : MonoBehaviour
             }
 
             Mesh landMesh = new Mesh();
+            landMesh.name = "Land Mesh";
             landMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
             landMesh.CombineMeshes(landCombine.ToArray());
 
             Mesh waterMesh = new Mesh();
+            landMesh.name = "Water Mesh";
             waterMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
             waterMesh.CombineMeshes(waterCombine.ToArray());
-
-            transform.GetChild(0).GetComponent<MeshFilter>().mesh = landMesh;
-            transform.GetChild(1).GetComponent<MeshFilter>().mesh = waterMesh;
 
             AssetDatabase.CreateAsset(landMesh, "Assets/Assets/Title Menu/Land.asset");
             AssetDatabase.CreateAsset(waterMesh, "Assets/Assets/Title Menu/Water.asset");
@@ -283,15 +285,14 @@ public class World : MonoBehaviour
     public void UpdateChunks()
     {
         HashSet<Vector2> removedDuppes = new HashSet<Vector2>(toUpdate);
+        toUpdate.Clear();
 
         foreach (Vector2 pos in removedDuppes)
         {
             Chunk chunk = chunks[pos];
-            chunk.Enable();
             chunk.Render();
+            chunk.Enable();
         }
-
-        toUpdate.Clear();
     }
 
     public bool ChunkExists(Vector3 pos)

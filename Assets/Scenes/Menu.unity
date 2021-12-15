@@ -429,7 +429,6 @@ GameObject:
   - component: {fileID: 973329826}
   - component: {fileID: 973329828}
   - component: {fileID: 973329827}
-  - component: {fileID: 973329829}
   m_Layer: 0
   m_Name: Water
   m_TagString: Untagged
@@ -499,20 +498,6 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 973329825}
-  m_Mesh: {fileID: 4300000, guid: c7afc5dd3fc5b9a47a118e5f8b0ec909, type: 2}
---- !u!64 &973329829
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 973329825}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: c7afc5dd3fc5b9a47a118e5f8b0ec909, type: 2}
 --- !u!1001 &1002824213
 PrefabInstance:
@@ -1074,6 +1059,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chunkPrefab: {fileID: 5996309389191628120, guid: 94d4883e802b9c74fb024a316a4e5d47, type: 3}
   titleScreen: 1
+  titleScreenSize: 6
   seed: 3
   spawnPos: {x: 0, y: 0, z: 0}
   spawnDistanceFromCenter: Infinity
