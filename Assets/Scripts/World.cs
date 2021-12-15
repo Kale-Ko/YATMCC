@@ -26,6 +26,8 @@ public class World : MonoBehaviour
     public Vector3 spawnPos = new Vector3(0, 0, 0);
     public float spawnDistanceFromCenter = float.PositiveInfinity;
 
+    List<Vector2> toUpdate = new List<Vector2>();
+
     class Block
     {
         public Vector3 pos;
@@ -140,14 +142,7 @@ public class World : MonoBehaviour
             }
         }
 
-        for (var x = pos.x - Config.distance; x < pos.x + 1 + Config.distance; x++)
-        {
-            for (var y = pos.y - Config.distance; y < pos.y + 1 + Config.distance; y++)
-            {
-                if (chunks[new Vector2(x, y)].rendered) chunks[new Vector2(x, y)].Enable();
-                else chunks[new Vector2(x, y)].Render();
-            }
-        }
+        UpdateChunks();
     }
 
     public void GenereateNoise(float x, float y)
@@ -285,6 +280,20 @@ public class World : MonoBehaviour
         }
     }
 
+    public void UpdateChunks()
+    {
+        HashSet<Vector2> removedDuppes = new HashSet<Vector2>(toUpdate);
+
+        foreach (Vector2 pos in removedDuppes)
+        {
+            Chunk chunk = chunks[pos];
+            chunk.Enable();
+            chunk.Render();
+        }
+
+        toUpdate.Clear();
+    }
+
     public bool ChunkExists(Vector3 pos)
     {
         if (!ValidPos(pos)) return false;
@@ -336,7 +345,12 @@ public class World : MonoBehaviour
 
         if (BlockExists(pos)) RemoveBlock(pos);
 
-        if (ChunkExists(pos)) GetChunk(pos).blocks.Add(pos, block);
+        if (ChunkExists(pos))
+        {
+            GetChunk(pos).blocks.Add(pos, block);
+
+            toUpdate.Add(new Vector2(GetChunk(pos).chunkx, GetChunk(pos).chunky));
+        }
         else toGenerate.Add(new Block(pos, block));
     }
 
@@ -345,7 +359,12 @@ public class World : MonoBehaviour
         if (!ValidPos(pos)) return;
 
         if (!BlockExists(pos)) return;
-        else if (ChunkExists(pos)) GetChunk(pos).blocks.Remove(pos);
+        else if (ChunkExists(pos))
+        {
+            GetChunk(pos).blocks.Remove(pos);
+
+            toUpdate.Add(new Vector2(GetChunk(pos).chunkx, GetChunk(pos).chunky));
+        }
     }
 
     public bool IsBlock(Vector3 pos)
