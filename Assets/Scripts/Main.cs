@@ -34,13 +34,13 @@ public class Main : MonoBehaviour
         {
             paused = false;
 
-            Cursor.lockState = CursorLockMode.None;
+            Cursor.lockState = CursorLockMode.Locked;
         }
         else
         {
             paused = true;
 
-            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.lockState = CursorLockMode.None;
         }
     }
 
