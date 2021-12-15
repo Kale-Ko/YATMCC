@@ -27,8 +27,6 @@ public class World : MonoBehaviour
     public Vector3 spawnPos = new Vector3(0, 0, 0);
     public float spawnDistanceFromCenter = float.PositiveInfinity;
 
-    List<Vector2> toUpdate = new List<Vector2>();
-
     class Block
     {
         public Vector3 pos;
@@ -42,6 +40,9 @@ public class World : MonoBehaviour
     }
 
     List<Block> toGenerate = new List<Block>();
+    List<Vector2> toUpdate = new List<Vector2>();
+
+    bool updatesEnabled = true;
 
     Noise noise;
     Noise biomeNoise;
@@ -129,7 +130,12 @@ public class World : MonoBehaviour
         {
             for (var y = pos.y - Config.distance; y < pos.y + 1 + Config.distance; y++)
             {
-                if (chunks.ContainsKey(new Vector2(x, y))) continue;
+                if (chunks.ContainsKey(new Vector2(x, y)))
+                {
+                    chunks[new Vector2(x, y)].transform.GetComponent<Chunk>().Enable();
+
+                    continue;
+                }
 
                 GameObject newchunk = Instantiate(chunkPrefab);
                 newchunk.name = "Chunk " + x + ", " + y;
@@ -140,7 +146,11 @@ public class World : MonoBehaviour
 
                 chunks.Add(new Vector2(x, y), newchunk.GetComponent<Chunk>());
 
+                updatesEnabled = false;
+
                 GenerateChunk(x, y);
+
+                updatesEnabled = true;
             }
         }
 
@@ -334,9 +344,9 @@ public class World : MonoBehaviour
 
     public BlockType GetBlock(Vector3 pos)
     {
-        if (!ValidPos(pos)) return null;
+        if (!ValidPos(pos)) return Blocks.Air;
 
-        if (!BlockExists(pos)) return null;
+        if (!BlockExists(pos)) return Blocks.Air;
         else return GetChunk(pos).blocks[pos];
     }
 
@@ -344,11 +354,19 @@ public class World : MonoBehaviour
     {
         if (!ValidPos(pos)) return;
 
-        if (BlockExists(pos)) RemoveBlock(pos);
-
         if (ChunkExists(pos))
         {
+            if (BlockExists(pos)) GetChunk(pos).blocks.Remove(pos);
             GetChunk(pos).blocks.Add(pos, block);
+
+            if (updatesEnabled && block == Blocks.Water)
+            {
+                if (GetBlock(pos + new Vector3(1, 0, 0)) == Blocks.Air) SetBlock(pos + new Vector3(1, 0, 0), Blocks.Water);
+                if (GetBlock(pos + new Vector3(0, 0, 1)) == Blocks.Air) SetBlock(pos + new Vector3(0, 0, 1), Blocks.Water);
+                if (GetBlock(pos + new Vector3(-1, 0, 0)) == Blocks.Air) SetBlock(pos + new Vector3(-1, 0, 0), Blocks.Water);
+                if (GetBlock(pos + new Vector3(0, 0, -1)) == Blocks.Air) SetBlock(pos + new Vector3(0, 0, -1), Blocks.Water);
+                if (GetBlock(pos + new Vector3(0, -1, 0)) == Blocks.Air) SetBlock(pos + new Vector3(0, -1, 0), Blocks.Water);
+            }
 
             toUpdate.Add(new Vector2(GetChunk(pos).chunkx, GetChunk(pos).chunky));
         }
@@ -363,6 +381,11 @@ public class World : MonoBehaviour
         else if (ChunkExists(pos))
         {
             GetChunk(pos).blocks.Remove(pos);
+
+            if (updatesEnabled && (GetBlock(pos + new Vector3(1, 0, 0)) == Blocks.Water || GetBlock(pos + new Vector3(0, 0, 1)) == Blocks.Water || GetBlock(pos + new Vector3(-1, 0, 0)) == Blocks.Water || GetBlock(pos + new Vector3(0, 0, -1)) == Blocks.Water || GetBlock(pos + new Vector3(0, 1, 0)) == Blocks.Water))
+            {
+                SetBlock(pos, Blocks.Water);
+            }
 
             toUpdate.Add(new Vector2(GetChunk(pos).chunkx, GetChunk(pos).chunky));
         }
