@@ -1,9 +1,3 @@
-/**
-    MIT License
-    Copyright (c) 2021 Kale Ko
-    See https://kaleko.ga/license.txt
-*/
-
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading;
